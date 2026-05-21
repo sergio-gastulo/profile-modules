@@ -108,5 +108,3 @@ function Search-Google {
 	}
     Start-Process $browser -ArgumentList $url
 }
-
-# Export-ModuleMember -Function * -Alias *

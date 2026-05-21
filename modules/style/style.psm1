@@ -21,6 +21,7 @@ $availableThemes = @(
 )
 
 function Get-PowershellThemes {
+    [alias("getpowthemes")]
     param (
 
     )
@@ -28,6 +29,7 @@ function Get-PowershellThemes {
 }
 
 function Set-PowershellTheme {
+    [alias("setpowtheme")]
     param (
         [string] $theme
     )
@@ -115,17 +117,3 @@ function Set-Wallpaper {
     }
     setWallpaper $wallpaper
 }
-
-
-Export-ModuleMember -Function @(
-    "Set-DarkTheme",
-    "Set-LightTheme",
-    "Set-Wallpaper"
-)
-Export-ModuleMember -Function @(
-    "Get-PowershellThemes",
-    "Set-PowershellTheme"
-) -Alias @(
-    "getpowthemes",
-    "setpowtheme"
-)

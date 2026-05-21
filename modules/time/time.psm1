@@ -20,6 +20,7 @@ function capitalize {
 }
 
 function Show-Time {
+    [alias("showtime")]
     param(
 
     )
@@ -32,10 +33,10 @@ function Show-Time {
 }
 
 function Get-TimeFromCity {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "", Target="CurrentCity")]
+    [alias("time")]
 	param(
-		[string] $city,
-        [switch] $echo
+		[string] $City,
+        [switch] $NoEcho
 	)
     $city = $city.ToLower()
     if (-not $timezones.Contains($city)) {
@@ -47,14 +48,16 @@ function Get-TimeFromCity {
     $offset = $timezones[$city]
     $time = (Get-Date).ToUniversalTime().AddHours($offset).ToString($timefmt)
     $capitalized = capitalize $city
-    $CurrentCity = $capitalized
-    if ($echo) {
+    $script:CurrentCity = $capitalized
+    if (-not $NoEcho) {
         Write-Host "Current time in $capitalized`: $time"
+        return
     }
     return $time 
 }
 
 function Get-Today {
+    [alias("today")]
 	param(
 		
 	)
@@ -65,14 +68,4 @@ function Get-Today {
 	Write-Host $res
 }
 
-
-Export-ModuleMember -Function @(
-    "Get-TimeFromCity",
-    "Show-Time",
-    "Get-Today"
-) -Alias @(
-    "time",
-    "showtime",
-    "today"
-)
-Export-ModuleMember -Variable "CurrentCity"
+Export-ModuleMember -Variable CurrentCity -Function * -Alias *

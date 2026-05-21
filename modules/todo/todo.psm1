@@ -1,6 +1,7 @@
-Import-Module $PSScriptRoot\sensitive.psm1
+Import-Module (Resolve-Path "$PSScriptRoot\..\..\configs\sensitive.psm1")
 
 function New-Todo {
+    [alias("ntodo")]
     param(
         [string] $suffix
     )
@@ -18,6 +19,7 @@ function New-Todo {
 }
 
 function Search-Todo {
+    [alias("stodo")]
     param (
         [string] $search
     )
@@ -27,6 +29,7 @@ function Search-Todo {
 }
 
 function Move-Todo {
+    [alias("mtodo")]
     param (
         [string] $scanDirectory = (Get-Location)
     )
@@ -39,6 +42,7 @@ function Move-Todo {
 }
 
 function Switch-Todo {
+    [alias("todo")]
     param(
         [switch] $new,
         [string] $suffix,
@@ -80,6 +84,7 @@ function reminder {
 
 
 function Set-Reminder {
+    [alias("remindme")]
     param(
         [Parameter(Mandatory=$true)]
         [double] $minutes
@@ -95,18 +100,3 @@ function Set-Reminder {
     $jid = $job.Id
     Write-Host "Timer set -- reminder at $when (job id: $jid)"
 }
-
-
-Export-ModuleMember -Function @(
-    "New-Todo",
-    "Search-Todo",
-    "Move-Todo",
-    "Switch-Todo",
-    "Set-Reminder"
-) -Alias @(
-    "ntodo",
-    "stodo",
-    "mtodo",
-    "todo",
-    "remindme"
-)

@@ -12,6 +12,7 @@ function getClipboardImg {
 
 
 function Save-ClipboardImage {
+    [alias("ss")]
     param(
         [string] $fname,
         [string] $dir = (Get-Location).Path,
@@ -52,6 +53,7 @@ function Save-ClipboardImage {
 }
 
 function Copy-Path {
+    [alias("cpa")]
     param(
         [string] $path
     )
@@ -65,6 +67,7 @@ function Copy-Path {
 
 
 function Start-PowershellAdminMode{
+    [alias("sudo")]
     param(
 
 	)
@@ -75,6 +78,7 @@ function Start-PowershellAdminMode{
 }
 
 function Set-HideItem {
+    [alias("hide")]
 	param(
 		[string] $path
 	)
@@ -90,6 +94,7 @@ function Set-HideItem {
 }
 
 function Set-LocationModified {
+    [alias("mcd")]
 	param(
 		[Parameter(Position=0, mandatory=$true)]
 		[string] $path
@@ -129,6 +134,7 @@ function Set-LocationModified {
 
 
 function New-TemporaryVimFileEdit {
+    [alias("vimt")]
 	param(
 		[switch] $removeExistent,
         [switch] $setClipboard,
@@ -154,6 +160,7 @@ function New-TemporaryVimFileEdit {
 # edited via command line -- too dangerous.
 # might change my mind later tho
 function Set-EnvironmentalVariable {
+    [alias("setenv")]
     param (
         [string] $variable,
         [string] $value

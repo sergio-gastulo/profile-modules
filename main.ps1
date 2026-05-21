@@ -1,12 +1,13 @@
-Import-Module "$PSScriptRoot\scripts\bindings.psm1"
-Import-Module "$PSScriptRoot\scripts\management.psm1"
-Import-Module "$PSScriptRoot\scripts\prompt.psm1"
-Import-Module "$PSScriptRoot\scripts\time.psm1"
-Import-Module "$PSScriptRoot\scripts\todo.psm1"
-Import-Module "$PSScriptRoot\scripts\variables.psm1"
-Import-Module "$PSScriptRoot\scripts\workspace.psm1"
+Import-Module "$PSScriptRoot\configs\bindings.psm1"
+Import-Module "$PSScriptRoot\configs\variables.psm1"
+Import-Module "$PSScriptRoot\configs\sensitive.psm1"
 
-Set-Alias -Name "ss" -Value Save-ClipboardImage
+Import-Module "$PSScriptRoot\modules\management\management.psd1"
+Import-Module "$PSScriptRoot\modules\prompt\prompt.psd1"
+Import-Module "$PSScriptRoot\modules\time\time.psd1" -Verbose
+Import-Module "$PSScriptRoot\modules\todo\todo.psd1"
+Import-Module "$PSScriptRoot\modules\workspace\workspace.psd1"
+Import-Module "$PSScriptRoot\modules\management\management.psd1"
 
 function prompt {
     $str = Get-Prompt -city $CurrentCity

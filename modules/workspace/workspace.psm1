@@ -1,9 +1,10 @@
-Import-Module $PSScriptRoot\style.psm1
-Import-Module $PSScriptRoot\sensitive.psm1
-Import-Module $PSScriptRoot\prompt.psm1
-Import-Module $PSScriptRoot\management.psm1
-Import-Module $PSScriptRoot\applications.psm1
-Import-Module $PSScriptRoot\time.psm1
+Import-Module (Resolve-Path "$PSScriptRoot\..\..\configs\sensitive.psm1")
+
+Import-Module (Resolve-Path "$PSScriptRoot\..\style\style.psd1")
+Import-Module (Resolve-Path "$PSScriptRoot\..\prompt\prompt.psd1")
+Import-Module (Resolve-Path "$PSScriptRoot\..\management\management.psd1")
+Import-Module (Resolve-Path "$PSScriptRoot\..\applications\applications.psd1")
+Import-Module (Resolve-Path "$PSScriptRoot\..\time\time.psd1")
 
 
 function Set-OfficeWorkspace {
@@ -40,7 +41,7 @@ function Switch-Workspace {
         [switch] $out
     )
 
-    if ($office -xor $out) {
+    if (-not ($office -xor $out)) {
         Write-Error -Category InvalidArgument -Message "Only one mode at a time can be passed."
         return
     }
@@ -55,5 +56,3 @@ function Switch-Workspace {
     }
 
 }
-
-Export-ModuleMember -Function Switch-Workspace

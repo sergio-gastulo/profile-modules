@@ -1,4 +1,4 @@
-Import-Module $PSScriptRoot\time.psm1
+Import-Module (Resolve-Path "$PSScriptRoot\..\time\time.psd1")
 
 $ESC = [char]27
 $END = "${ESC}[0m"
@@ -61,7 +61,7 @@ function Get-Prompt {
     $computer = $env:COMPUTERNAME
 	$ssh = "$user@$computer"
     $path = Get-CurrentPathStyled
-    $time = Get-TimeFromCity -city $city
+    $time = Get-TimeFromCity -City $city -NoEcho
 
     $charge, $isCharging = Get-BatteryInfo 
     $battery = Get-BatteryInfoStyled -charge $charge -isCharging $isCharging
@@ -69,7 +69,3 @@ function Get-Prompt {
     $promptStr = "PS ($time) ($battery) [$ssh] $path`n> "
     return $promptStr 
 }
-
-Export-ModuleMember -Function @(
-    "Get-Prompt"
-)
