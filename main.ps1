@@ -1,14 +1,14 @@
+Import-Module "$PSScriptRoot\scripts\bindings.psm1"
+Import-Module "$PSScriptRoot\scripts\management.psm1"
+Import-Module "$PSScriptRoot\scripts\prompt.psm1"
 Import-Module "$PSScriptRoot\scripts\time.psm1"
-Import-Module "$PSScriptRoot\scripts\prompt-utils.psm1"
-Import-Module "$PSScriptRoot\scripts\file-management.psm1"
+Import-Module "$PSScriptRoot\scripts\todo.psm1"
+Import-Module "$PSScriptRoot\scripts\variables.psm1"
+Import-Module "$PSScriptRoot\scripts\workspace.psm1"
 
+Set-Alias -Name "ss" -Value Save-ClipboardImage
 
 function prompt {
-    if ($Global:City) {
-        $str = Set-Prompt -city $Global:City
-    } else {
-        $Global:City = "Madrid"
-        $str = Set-Prompt
-    }
+    $str = Get-Prompt -city $CurrentCity
     return $str
 }

@@ -1,3 +1,12 @@
+Import-Module $PSScriptRoot\time.psm1
+
+$ESC = [char]27
+$END = "${ESC}[0m"
+$RED = "${ESC}[31m"
+$GREEN = "${ESC}[32m"
+$YELLOW = "${ESC}[33m"
+$CYAN = "${ESC}[36m"
+
 function Get-BatteryInfo {
     param (
         
@@ -10,17 +19,11 @@ function Get-BatteryInfo {
     return $charge, $isCharging
 }
 
-function Set-BatteryStyle {
+function Get-BatteryInfoStyled {
     param (
         [double] $charge,
         [bool] $isCharging
     )
-    $ESC = [char]27
-    $END = "${ESC}[0m"
-    $RED = "${ESC}[31m"
-    $GREEN = "${ESC}[32m"
-    $YELLOW = "${ESC}[33m"
-
     $critical = 20
     $warn = 35
     $chargeFmt = [Math]::Floor($charge)
@@ -45,30 +48,28 @@ function Get-CurrentPathStyled {
     param(
 
     )
-    $ESC = [char]27
-    $END = "${ESC}[0m"
-    $CYAN = "${ESC}[36m"
     $currentDir = Split-Path (Get-Location) -Leaf
     $pathStyled = "$CYAN$currentDir$END"
     return $pathStyled
 }
 
-function Set-Prompt {
+function Get-Prompt {
     param(
-        [string] $city = "Madrid"
+        [string] $city = $CurrentCity
     )
     $user = $env:USERNAME
     $computer = $env:COMPUTERNAME
 	$ssh = "$user@$computer"
     $path = Get-CurrentPathStyled
-    $time = Get-Time -city $city -echo $false
+    $time = Get-TimeFromCity -city $city
 
     $charge, $isCharging = Get-BatteryInfo 
-    $batteryStr = Set-BatteryStyle -charge $charge -isCharging $isCharging
+    $battery = Get-BatteryInfoStyled -charge $charge -isCharging $isCharging
 
-
-    $promptStr = "PS ($time) ($batteryStr) [$ssh] $path`n> "
-    return $promptStr
+    $promptStr = "PS ($time) ($battery) [$ssh] $path`n> "
+    return $promptStr 
 }
 
-Export-ModuleMember Set-Prompt
+Export-ModuleMember -Function @(
+    "Get-Prompt"
+)
