@@ -4,10 +4,11 @@ Import-Module "$PSScriptRoot\configs\sensitive.psm1"
 
 Import-Module "$PSScriptRoot\modules\management\management.psd1"
 Import-Module "$PSScriptRoot\modules\prompt\prompt.psd1"
-Import-Module "$PSScriptRoot\modules\time\time.psd1" -Verbose
+Import-Module "$PSScriptRoot\modules\time\time.psd1" 
 Import-Module "$PSScriptRoot\modules\todo\todo.psd1"
 Import-Module "$PSScriptRoot\modules\workspace\workspace.psd1"
-Import-Module "$PSScriptRoot\modules\management\management.psd1"
+Import-Module "$PSScriptRoot\modules\applications\applications.psd1"
+Import-Module "$PSScriptRoot\modules\style\style.psd1"
 
 function prompt {
     $str = Get-Prompt -city $CurrentCity

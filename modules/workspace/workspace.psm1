@@ -11,13 +11,20 @@ function Set-OfficeWorkspace {
     param (
         
     )
-    Set-TimeFromCity -City Chicago -Echo
+    Get-TimeFromCity -City Chicago
     Set-Location $WorkDirectory
     Open-Zoom
     if (-not (isLightModeEnabled)) {
         Set-LightTheme
+    } else {
+        Write-Host "Light Mode is already enabled."
     }
-    $woringkWallpaper = Join-Path -Path $WallPaperImagesDirectory -ChildPath "working.jpg" 
+    $woringkWallpaper = [System.IO.Path]::Combine(
+            $env:USERPROFILE, 
+            "images", 
+            "wallpapers", 
+            "working.jpg"
+        ) 
     Set-Wallpaper $woringkWallpaper
 }
 
@@ -25,7 +32,7 @@ function Set-OutWorkspace {
     param (
         
     )
-    Set-TimeFromCity -City Madrid -Echo
+    Get-TimeFromCity -City Madrid
     Set-Location $HOME
     if (isLightModeEnabled) {
         Set-DarkTheme        
@@ -35,15 +42,14 @@ function Set-OutWorkspace {
 
 
 function Switch-Workspace {
-    [alias("switchworkspace")]
+    [alias("!workspace")]
     param(
         [switch] $office,
         [switch] $out
     )
 
     if (-not ($office -xor $out)) {
-        Write-Error -Category InvalidArgument -Message "Only one mode at a time can be passed."
-        return
+        Write-Error -Category InvalidArgument -Message "Only one mode at a time can be passed." -ErrorAction Stop
     }
 
     if ($office) {

@@ -25,7 +25,7 @@ function Get-PowershellThemes {
     param (
 
     )
-    Write-Host $availableThemes
+    Format-Table $availableThemes
 }
 
 function Set-PowershellTheme {
@@ -46,6 +46,7 @@ function Set-PowershellTheme {
 		"LocalState", 
 		"settings.json"
 	)
+    # force writing theme to settings.json
     $json = Get-Content $LocalPowershellSettings | ConvertFrom-Json
     $json.profiles.list[0].colorScheme = $theme
     $json.profiles.list[1].colorScheme = $theme
@@ -66,18 +67,25 @@ function Set-LightTheme {
     Write-Host "Light theme enabled."
 }
 
+# TODO: expose only if required (not on global)
 function isLightModeEnabled {
     param (
         
     )
-    $appsInLightMode = Get-ItemProperty -Path $THEMESREGISTRYPATH -Name "AppsUseLightTheme"
-    $systemInLightMode = Get-ItemProperty -Path $THEMESREGISTRYPATH -Name "SystemUsesLightTheme"
+    $registry = Get-ItemProperty -Path $THEMESREGISTRYPATH
+    $appsInLightMode = $registry.AppsUseLightTheme
+    $systemInLightMode = $registry.SystemUsesLightTheme
     return ($appsInLightMode -and $systemInLightMode)
 }
 
 function getRandomWallpaper {
         # https://www.reddit.com/r/PowerShell/comments/wpgjyc/comment/ikgojkg
-        $wallpapersPath = [System.IO.Path]::Combine($env:USERPROFILE, "images", "wallpapers")
+        $wallpapersPath = [System.IO.Path]::Combine(
+            $env:USERPROFILE, 
+            "images", 
+            "wallpapers", 
+            "real_wallpapers"
+        )
         $wallpapers = Get-ChildItem -Path $wallpapersPath 
         $wallpaperPath = ($wallpapers | Get-Random).FullName
         return $wallpaperPath
@@ -85,6 +93,7 @@ function getRandomWallpaper {
 
 function setWallpaper {
     param([string] $wallpaper)
+    # addapted from
     # https://github.com/fleschutz/PowerShell/blob/main/scripts/set-wallpaper.ps1
     Add-Type @"
         using System;
@@ -105,7 +114,7 @@ function setWallpaper {
         0,
         $wallpaper,
         $SPIF_UPDATEINIFILE -bor $SPIF_SENDCHANGE
-    )
+    ) | Out-Null
 }
 
 function Set-Wallpaper {
@@ -115,5 +124,6 @@ function Set-Wallpaper {
     if (-not $wallpaper) {
         $wallpaper = getRandomWallpaper
     }
-    setWallpaper $wallpaper
+    $resolved = Resolve-Path $wallpaper
+    setWallpaper $resolved
 }

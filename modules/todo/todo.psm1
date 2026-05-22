@@ -25,7 +25,6 @@ function Search-Todo {
     )
     Write-Host "Searching '$search' accross all files in $TODODirectory`:"
     findstr.exe /s /i /n $search $TODODirectory\*
-    return
 }
 
 function Move-Todo {
@@ -35,10 +34,9 @@ function Move-Todo {
     )
     $todos = Get-ChildItem $scanDirectory -Filter 'todo*'
     foreach ($todo in $todos) {
-        Move-Item -Path $todo.FullName -Destination $TODODirectory
+        Move-Item -Path $todo.FullName -Destination $TODODirectory -ErrorAction Stop
     }
     Write-Host "All TODO files have been transferred to '$TODODirectory'."
-    return
 }
 
 function Switch-Todo {
@@ -86,17 +84,19 @@ function reminder {
 function Set-Reminder {
     [alias("remindme")]
     param(
-        [Parameter(Mandatory=$true)]
         [double] $minutes
     )
 
+    if (-not $minutes) {
+        Write-Error -Category InvalidArgument -ErrorAction Stop -Message "Minutes are mandatory."s
+    }
+
     if (-not $args) {
-        Write-Error -Message "Missing message (`$args). Signature call: Set-Reminder -minutes MINUTES msg1 msg2 ..." -Category InvalidArgument
-        return
+        Write-Error -Message "Missing message (`$args). Signature call: Set-Reminder -minutes MINUTES msg1 msg2 ..." -Category InvalidArgument -ErrorAction Stop
     }
     $reminderMessage = $args -join " "
     $job = Start-Job -ScriptBlock {reminder $minutes $reminderMessage "Reminder"}
-    $when = (Get-Date).AddSeconds($Seconds).ToString("HH:mm:ss")
+    $when = (Get-Date).AddMinutes($minutes).ToString("HH:mm:ss")
     $jid = $job.Id
     Write-Host "Timer set -- reminder at $when (job id: $jid)"
 }

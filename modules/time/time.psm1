@@ -2,6 +2,7 @@
 $CurrentCity = "Madrid"
 
 $timezones = [ordered]@{
+                    # UTC offset
     "chicago"		=	-5
     "lima"			= 	-5
     "ottawa"		= 	-4

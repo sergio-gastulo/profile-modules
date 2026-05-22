@@ -14,43 +14,46 @@ function getClipboardImg {
 function Save-ClipboardImage {
     [alias("ss")]
     param(
-        [string] $fname,
-        [string] $dir = (Get-Location).Path,
-        [switch] $removePrefix,
-        [switch] $forgetPath
+        [string] $Directory = (Get-Location).Path,
+        [string] $SuffixName,
+        [switch] $IgnorePrefix,
+        [switch] $CopyPath
     )
 
-    # validate arguments
-    if (-not (Test-Path $dir)) {
-        Write-Error "Given directory does not exist: '$dir'." -Category InvalidArgument
+    # non valid dir -> throw
+    if (-not (Test-Path $Directory)) {
+        Write-Error "Given directory does not exist: '$Directory'." -Category InvalidArgument
         return
     }
-    if (-not $fname) {
-        $fname = Read-Host "Enter the file name (do not provide extension)" 
+    # not suffix? mandatory
+    if (-not $SuffixName) {
+        $SuffixName = Read-Host "Enter the file name (do not provide extension)" 
     }
 
-    if (-not $removePrefix) {
+    # removePrefix -> ignore leaf and todaystr
+    if (-not $IgnorePrefix) {
         $today = (Get-Date -Format "MM_dd_yyyy")
-        $leaf = Split-Path $dir -Leaf
-        $fname = "$leaf`_$today`_$fname"
+        $leaf = Split-Path $Directory -Leaf
+        $fname = "$leaf`_$today`_$SuffixName"
     }
-    $fpath = Join-Path -Path $dir -ChildPath $fname
-    if ($fname.extension) {
+    # provided extension? throw
+    if ($fname.Contains(".")) {
         Write-Error "Extension is not currently allowed." -Category InvalidArgument
         return
     }
-
+    
+    $fname = "$fname.png"
+    $fpath = Join-Path -Path $dir -ChildPath $fname
     $img = getClipboardImg
-    $img.Save($fpath, [System.Drawing.Imaging.ImageFormat]::Png)   
+    $img.Save($fpath, [System.Drawing.Imaging.ImageFormat]::Png)
     Write-Output "Image saved to '$fpath'."
 
-    if (-not $forgetPath) {
+    if ($CopyPath) {
         Set-Clipboard $fpath
         Write-Host "Path copied to Clipboard."
     }
-
-
 }
+
 
 function Copy-Path {
     [alias("cpa")]
@@ -77,7 +80,7 @@ function Start-PowershellAdminMode{
     Start-Process powershell -Verb RunAs -ArgumentList $command
 }
 
-function Set-HideItem {
+function Hide-Item {
     [alias("hide")]
 	param(
 		[string] $path
@@ -142,14 +145,12 @@ function New-TemporaryVimFileEdit {
 	)
 
     # create-remove file
-    if (Test-Path $fileName) {
-        if ($removeExistent) {
-            Remove-Item $fileName
-        }
-        vim.exe $fileName
+    if ((Test-Path $fileName) -and ($removeExistent)) {
+        Remove-Item $fileName
     }
+    vim.exe $fileName
 
-    # set clipboard
+    # copy to clipboard
     if ($setClipboard) {
         Get-Content $fileName -Encoding UTF8 | Set-Clipboard
         Write-Host "Content set to clipboard."
@@ -162,39 +163,36 @@ function New-TemporaryVimFileEdit {
 function Set-EnvironmentalVariable {
     [alias("setenv")]
     param (
-        [string] $variable,
-        [string] $value
+        [string] $EnvironmentalVariable,
+        [string] $Value,
+		[switch] $UI,
+        [switch] $Verbose
     )
     
-    if ($variable.ToLower() -eq "path") {
+	if ($UI) {
+	 	Write-Host "Launching sysdm.cpl to set environmental variable manually."
+	    sysdm.cpl
+        return
+	}
+
+    if ($EnvironmentalVariable.ToLower() -eq "path") {
         Write-Warning "Environmental variable %PATH% will not be set via PS."
         Write-Host "Instead, launching sysdm.cpl to set it manually."
 	    sysdm.cpl
         return
     }
 
-    New-Item -Path "$Env`:$variable" -Value $value
-    [System.Environment]::SetEnvironmentVariable($variable, $value, "User")
-    Write-Host "Environmental variable $variable has been set to $value."
-    Write-Host "You can now execute `$Env:$variable or open a command prompt and execute 'echo %$($variable.ToUpper())%'."
+	$envPath = "Env:\$EnvironmentalVariable"
 
+    New-Item -Path $envPath -Value $Value -ErrorAction Stop
+    [System.Environment]::SetEnvironmentVariable($EnvironmentalVariable, $Value, "User")
+    if ($Verbose) {
+        Write-Host "Environmental variable $EnvironmentalVariable has been set to $value."
+        Write-Host "You can now execute `$Env:$EnvironmentalVariable or open a command prompt and execute 'echo %$($variable.ToUpper())%'."
+    }
 }
 
-
-Export-ModuleMember @(
-    "Save-ClipboardImage",
-    "Copy-Path",
-    "Start-PowershellAdminMode",
-    "Set-HideItem",
-    "Set-LocationModified",
-    "New-TemporaryVimFileEdit",
-    "Set-EnvironmentalVariable"
-) -Alias @(
-    "ss",
-    "cpa",
-    "sudo",
-    "hide",
-    "mcd",
-    "vimt",
-    "setenv"
-)
+# TODO: implement 
+function Remove-EnvironmentalVariable {
+    
+}

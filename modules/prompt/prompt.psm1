@@ -53,13 +53,14 @@ function Get-CurrentPathStyled {
     return $pathStyled
 }
 
+
+$user = $env:USERNAME
+$computer = $env:COMPUTERNAME
+$ssh = "$user@$computer"
 function Get-Prompt {
     param(
         [string] $city = $CurrentCity
     )
-    $user = $env:USERNAME
-    $computer = $env:COMPUTERNAME
-	$ssh = "$user@$computer"
     $path = Get-CurrentPathStyled
     $time = Get-TimeFromCity -City $city -NoEcho
 

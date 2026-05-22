@@ -106,5 +106,5 @@ function Search-Google {
 	if (-not $useAll) {
 		$url = "$url&udm=14"
 	}
-    Start-Process $browser -ArgumentList $url
+    Start-Process "$browser" -ArgumentList $url
 }
