@@ -1,4 +1,5 @@
 Import-Module (Resolve-Path "$PSScriptRoot\..\..\configs\sensitive.psm1")
+Import-Module (Resolve-Path "$PSScriptRoot\..\time\time.psd1")
 
 function New-Todo {
     [alias("ntodo")]
@@ -95,8 +96,9 @@ function Set-Reminder {
         Write-Error -Message "Missing message (`$args). Signature call: Set-Reminder -minutes MINUTES msg1 msg2 ..." -Category InvalidArgument -ErrorAction Stop
     }
     $reminderMessage = $args -join " "
-    $job = Start-Job -ScriptBlock {reminder $minutes $reminderMessage "Reminder"}
-    $when = (Get-Date).AddMinutes($minutes).ToString("HH:mm:ss")
+    $job = Start-Job -ScriptBlock { reminder } -ArgumentList {$minutes, $reminderMessage, "Reminder"}
+    $when = Get-TimeFromCity -City $CurrentCity -NoEcho -ErrorAction Stop
+    $when = $when.AddMinutes($minutes).ToString("HH:mm:ss")
     $jid = $job.Id
     Write-Host "Timer set -- reminder at $when (job id: $jid)"
 }

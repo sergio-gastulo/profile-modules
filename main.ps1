@@ -11,6 +11,5 @@ Import-Module "$PSScriptRoot\modules\applications\applications.psd1"
 Import-Module "$PSScriptRoot\modules\style\style.psd1"
 
 function prompt {
-    $str = Get-Prompt -city $CurrentCity
-    return $str
+    return Get-Prompt
 }

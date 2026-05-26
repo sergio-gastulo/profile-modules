@@ -1,6 +1,24 @@
-# syntaxis: Open-Application
-# alias: application (lowercase)
+#region ========================== important  ==================================
 
+# syntaxis: Open-Application
+# aliases: "application" in lowercase or abbreviation (e.g app)
+
+#endregion =====================================================================
+
+<#
+.SYNOPSIS
+	Open Zoom Application.
+.DESCRIPTION
+	Opens Zoom Application from binary directly.
+.NOTES
+	The full path binary is printed to stdout the check which path is being launched.
+.LINK
+	Specify a URI to a help page, this will show when Get-Help -Online is used.
+.EXAMPLE
+	Open-Zoom
+.EXAMPLE
+	zoom
+#>
 function Open-Zoom {
     [alias("zoom")]
     param(
@@ -11,36 +29,59 @@ function Open-Zoom {
 	Start-Process $zoom
 }
 
+
+<#
+.SYNOPSIS
+	Opens Wolfram Application from the specified version.
+.NOTES
+	If no path is found, it is assumed that the version is wrong, but it won't 
+	first test whether the Application is actually installed.
+.NOTES
+	The full path binary is printed to stdout the check which path is being launched.
+.EXAMPLE
+	Open-Wolfram -Version 14.3
+.EXAMPLE
+	wolfram 15.0
+#>
 function Open-Wolfram {
     [alias("wolfram")]
     param (
 		[Parameter(Position=0, mandatory=$true)]
-        [string]$version
+        [string]$Version
     )
 
 	$binary = "WolframNB.exe"
 	$binaryPath = [System.IO.Path]::Combine(
 		$env:PROGRAMFILES,
+		"Wolfram Research",
 		"Wolfram",
-		$version,
+		$Version,
 		$binary
 	)
 	if (-not (Test-Path $binaryPath)) {
-		Write-Error -Message "Binary does not exist. Wrong version: $version" -Category InvalidArgument
-		return
+		Write-Error -Message "Binary does not exist. Wrong version: $Version" -Category InvalidArgument -ErrorAction Stop
 	}
-	Write-Host "Launching: $path."
-	Start-Process $path
+	Write-Host "Launching: $binaryPath."
+	Start-Process $binaryPath
 }
 
-
+<#
+.SYNOPSIS
+	Opens Microsoft Office Applications from binaries.
+.NOTES
+	The full path binary is printed to stdout the check which path is being launched.
+.EXAMPLE
+	Open-MicrosoftOffice -App Word
+.EXAMPLE
+	msof onote
+#>
 function Open-MicrosoftOffice {
 	[alias("msof")]
     param(
-		[string] $app
+		[string] $App
 	)
 
-	$apps = @{
+	$Apps = @{
 		"word" = "WINWORD.exe"
 		"excel" = "EXCEL.exe"
 		"point" = "POWERPNT.exe"
@@ -49,9 +90,9 @@ function Open-MicrosoftOffice {
 		"onenote" = "ONOTE.exe"
 	}
 
-	$app = $app.ToLower()
-	if (-not $apps.Contains($app)) {
-		Write-Error -Category InvalidArgument -Message "Argument '$app' is not a valid Microsoft Office Application."
+	$App = $App.ToLower()
+	if (-not $Apps.Contains($App)) {
+		Write-Error -Category InvalidArgument -Message "Argument '$App' is not a valid Microsoft Office Application."
 		return
 	}
 
@@ -60,12 +101,22 @@ function Open-MicrosoftOffice {
 		"Microsoft Office",
 		"root",
 		"Office16",
-		$apps[$app]
+		$Apps[$App]
 	)
 	Start-Process $officePath
 }
 
 
+<#
+.SYNOPSIS
+	Opens Steam from binary.
+.NOTES
+	The full path binary is printed to stdout the check which path is being launched.
+.EXAMPLE
+	Open-Steam
+.EXAMPLE
+	steam
+#>
 function Open-Steam {
 	[alias("steam")]
 	param (
@@ -76,6 +127,17 @@ function Open-Steam {
 	Start-Process $steam	
 }
 
+
+<#
+.SYNOPSIS
+	Opens Spotify from command line.
+.NOTES
+	The full path binary is printed to stdout the check which path is being launched.
+.EXAMPLE
+	Open-Spotify
+.EXAMPLE
+	spotify
+#>
 function Open-Spotify {
 	[alias("spotify")]
 	param(
@@ -87,12 +149,38 @@ function Open-Spotify {
 }
 
 
+<#
+.SYNOPSIS
+	Searches the query in google.com.
+.DESCRIPTION
+	Search the query provided by $args in google.com. By default, &utm=14 is
+	provided to deactivate AI Summary. To disable this, use the flag -UseAll.
+	The browser can also be specified via the argument -Browser. If you would 
+	like to switch from a different search engine provided, specify -Engine.
+.NOTES
+	It is not guaranteed that switching the engine will provide better results.
+	It hasn't been fully tested in other engines, probably some TODO.
+.EXAMPLE
+	Search-Google hello world
+	Opens an Edge tab with the query "hello world" searched via google.com.
+.EXAMPLE
+	google powershell documentation
+	Opens an Edge tab with the query "powershell documentation" searched via 
+	google.com.
+.EXAMPLE
+	google -Browser chrome powershell tutorial
+	Opens the URL query: https://powershell.com/search?q=help&udm=14 in the 
+	Google Chrome browser.
+.EXAMPLE
+	google -UseAll how to disable google cookies
+	Removes the "&udm=14" argument from the URL query.
+#>
 function Search-Google {
 	[alias("google")]
 	param (
-		[switch] $useAll,
-		[string] $browser = "msedge",
-		[string] $engine = "google"
+		[switch] $UseAll,
+		[string] $Browser = "msedge",
+		[string] $Engine = "google"
 	)
 
     if(-not $args){
@@ -102,9 +190,9 @@ function Search-Google {
         $search = $args -join "+"
     }
 
-	$url = "https://$engine.com/search?q=$search"
-	if (-not $useAll) {
+	$url = "https://$Engine.com/search?q=$search"
+	if (-not $UseAll) {
 		$url = "$url&udm=14"
 	}
-    Start-Process "$browser" -ArgumentList $url
+    Start-Process "$Browser" -ArgumentList $url
 }

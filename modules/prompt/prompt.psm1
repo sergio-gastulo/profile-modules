@@ -24,12 +24,12 @@ function Get-BatteryInfoStyled {
         [double] $charge,
         [bool] $isCharging
     )
-    $critical = 20
-    $warn = 35
+    $critical = 21
+    $warn = 31
     $chargeFmt = [Math]::Floor($charge)
 
     if ($isCharging) {
-        $chargeStr = "$GREEN$chargeFmt% +"
+        $chargeStr = "$GREEN$chargeFmt+ %"
     } else {
         if ($charge -lt $critical) {
             $chargeStr = "$RED$chargeFmt%"
@@ -62,7 +62,7 @@ function Get-Prompt {
         [string] $city = $CurrentCity
     )
     $path = Get-CurrentPathStyled
-    $time = Get-TimeFromCity -City $city -NoEcho
+    $time = Get-TimeFromCity -City $city -NoEcho -TimeFormat "HH:mm:ss"
 
     $charge, $isCharging = Get-BatteryInfo 
     $battery = Get-BatteryInfoStyled -charge $charge -isCharging $isCharging

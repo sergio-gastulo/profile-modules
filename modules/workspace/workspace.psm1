@@ -15,7 +15,7 @@ function Set-OfficeWorkspace {
     Set-Location $WorkDirectory
     Open-Zoom
     if (-not (isLightModeEnabled)) {
-        Set-LightTheme
+        Set-LightTheme -ResetExplorer
     } else {
         Write-Host "Light Mode is already enabled."
     }
@@ -35,7 +35,7 @@ function Set-OutWorkspace {
     Get-TimeFromCity -City Madrid
     Set-Location $HOME
     if (isLightModeEnabled) {
-        Set-DarkTheme        
+        Set-DarkTheme -ResetExplorer
     }
     Set-Wallpaper
 }

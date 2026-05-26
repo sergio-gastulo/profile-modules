@@ -11,6 +11,25 @@ function getClipboardImg {
 }
 
 
+<#
+.SYNOPSIS
+    Saves image copied to cliboard to a specified directory.
+.DESCRIPTION
+    Saves the last image copied from clipboard to a specified directory, with 
+    the name directory_date_name.png.
+.NOTES
+    One can disable the directory_date_ prefix with -IgnorePrefix.
+    The path the image is being saved to can be copied to clipboard directly 
+    with the option -CopyPath.
+    The alias "ss" comes from "save screenshot" (since it is the context under
+    which I use this function the most). 
+.EXAMPLE
+    Save-CliboardImage -Directory foo -SuffixName bar -CopyPath
+    Assume the date is 2026_05_26
+    The image is saved to the path .\foo\
+#>
+
+
 function Save-ClipboardImage {
     [alias("ss")]
     param(
@@ -32,7 +51,7 @@ function Save-ClipboardImage {
 
     # removePrefix -> ignore leaf and todaystr
     if (-not $IgnorePrefix) {
-        $today = (Get-Date -Format "MM_dd_yyyy")
+        $today = (Get-Date -Format "yyyy_MM_dd")
         $leaf = Split-Path $Directory -Leaf
         $fname = "$leaf`_$today`_$SuffixName"
     }
@@ -45,6 +64,12 @@ function Save-ClipboardImage {
     $fname = "$fname.png"
     $fpath = Join-Path -Path $dir -ChildPath $fname
     $img = getClipboardImg
+
+    if (-not $img) {
+        Write-Error -Category InvalidArgument -Message "The provided argument is not an image."
+        return
+    }
+
     $img.Save($fpath, [System.Drawing.Imaging.ImageFormat]::Png)
     Write-Output "Image saved to '$fpath'."
 

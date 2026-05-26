@@ -37,6 +37,7 @@ function Get-TimeFromCity {
     [alias("time")]
 	param(
 		[string] $City,
+        [string] $TimeFormat,
         [switch] $NoEcho
 	)
     $city = $city.ToLower()
@@ -45,15 +46,21 @@ function Get-TimeFromCity {
         return
     }
 
-    $timefmt = "HH:mm:ss"
     $offset = $timezones[$city]
-    $time = (Get-Date).ToUniversalTime().AddHours($offset).ToString($timefmt)
+    $time = (Get-Date).ToUniversalTime().AddHours($offset)
     $capitalized = capitalize $city
     $script:CurrentCity = $capitalized
     if (-not $NoEcho) {
         Write-Host "Current time in $capitalized`: $time"
         return
     }
+
+    # if format is specified, then is returned as a string in said format
+    if ($TimeFormat) {
+        $asfmt = $time.ToString($TimeFormat)
+        return $asfmt
+    }
+    # otherwise, return as date expresssion
     return $time 
 }
 

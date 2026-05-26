@@ -1,5 +1,8 @@
 # Modularized $PROFILE
 
+## TODO
+- Fix reminder.
+
 ### sensitive.psm1
 Powershell Module where sensitive data is passed. To check an example, consult [sensitive-example.psm1](./scripts/sensitive-example.psm1)
 

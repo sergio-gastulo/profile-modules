@@ -54,16 +54,38 @@ function Set-PowershellTheme {
 }
 
 function Set-DarkTheme {
+    param(
+        [switch] $ResetExplorer,
+        [int] $Seconds = 1,
+        [string] $PowershellTheme = $DefaultDarkModeTerminalTheme
+    )
     Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "AppsUseLightTheme" -Value 0
     Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "SystemUsesLightTheme" -Value 0
     Set-PowershellTheme $DefaultDarkModeTerminalTheme
+    if ($ResetExplorer) {
+        $process = "explorer"
+        Stop-Process -Name $process -Force 
+        Start-Sleep -Seconds $Seconds 
+        Start-Process $process
+    }
     Write-Host "Dark theme enabled."
 }
 
 function Set-LightTheme {
+    param(
+        [switch] $ResetExplorer,
+        [int] $Seconds = 1,
+        [string] $PowershellTheme = $DefaultLightModeTerminalTheme
+    )
     Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "AppsUseLightTheme" -Value 1
     Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "SystemUsesLightTheme" -Value 1
     Set-PowershellTheme $DefaultLightModeTerminalTheme
+    if ($ResetExplorer) {
+        $process = "explorer"
+        Stop-Process -Name $process -Force 
+        Start-Sleep -Seconds $Seconds 
+        Start-Process $process
+    }
     Write-Host "Light theme enabled."
 }
 
