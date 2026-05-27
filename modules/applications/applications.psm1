@@ -178,21 +178,23 @@ function Open-Spotify {
 function Search-Google {
 	[alias("google")]
 	param (
+		[Parameter(Position=0, ValueFromRemainingArguments)]
+		[string[]] $Query,
 		[switch] $UseAll,
 		[string] $Browser = "msedge",
 		[string] $Engine = "google"
 	)
 
-    if(-not $args){
+    if(-not $Query){
         Write-Error -Category InvalidArgument -Message "Arguments must be provided."
 		return
     } else {
-        $search = $args -join "+"
+        $search = $Query -join "+"
     }
 
 	$url = "https://$Engine.com/search?q=$search"
 	if (-not $UseAll) {
 		$url = "$url&udm=14"
 	}
-    Start-Process "$Browser" -ArgumentList $url
+    Start-Process $Browser -ArgumentList $url
 }

@@ -28,8 +28,6 @@ function getClipboardImg {
     Assume the date is 2026_05_26
     The image is saved to the path .\foo\
 #>
-
-
 function Save-ClipboardImage {
     [alias("ss")]
     param(
@@ -62,7 +60,8 @@ function Save-ClipboardImage {
     }
     
     $fname = "$fname.png"
-    $fpath = Join-Path -Path $dir -ChildPath $fname
+    $Directory = Resolve-Path $Directory
+    $fpath = Join-Path -Path $Directory -ChildPath $fname
     $img = getClipboardImg
 
     if (-not $img) {
