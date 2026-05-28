@@ -68,6 +68,7 @@ function Switch-Todo {
 
 function reminder {
     param([double] $minutesDelay, [string] $message, [string] $title)
+    
     $delay = 60 * $minutesDelay
     Start-Sleep -Seconds $delay
 
