@@ -8,6 +8,7 @@
         'Open-Steam',   
         'Open-Spotify',   
         'Open-MicrosoftOffice',   
-        'Search-Google'   
+        'Search-Google',
+        'Open-CounterStrike'
     )
 }

@@ -65,8 +65,8 @@ function Switch-Todo {
     }
 }
 
-
-function reminder {
+# https://stackoverflow.com/a/7162842/29272030
+$remindme =  {
     param([double] $minutesDelay, [string] $message, [string] $title)
     
     $delay = 60 * $minutesDelay
@@ -79,9 +79,7 @@ function reminder {
         [System.Windows.MessageBoxButton]::OK,
         [System.Windows.MessageBoxImage]::Information
     ) | Out-Null
-
 }
-
 
 function Set-Reminder {
     [alias("remindme")]
@@ -90,14 +88,16 @@ function Set-Reminder {
     )
 
     if (-not $minutes) {
-        Write-Error -Category InvalidArgument -ErrorAction Stop -Message "Minutes are mandatory."s
+        Write-Error -Category InvalidArgument -ErrorAction Stop -Message "Minutes are mandatory."
     }
 
     if (-not $args) {
-        Write-Error -Message "Missing message (`$args). Signature call: Set-Reminder -minutes MINUTES msg1 msg2 ..." -Category InvalidArgument -ErrorAction Stop
+        $err = "Missing message (`$args). Signature call: Set-Reminder -minutes MINUTES msg1 msg2 ..."
+        Write-Error -Category InvalidArgument -ErrorAction Stop -Message $err
     }
+
     $reminderMessage = $args -join " "
-    $job = Start-Job -ScriptBlock { reminder } -ArgumentList {$minutes, $reminderMessage, "Reminder"}
+    $job = Start-Job -ScriptBlock $remindme -ArgumentList $minutes, $reminderMessage, "Reminder"
     $when = Get-TimeFromCity -City $CurrentCity -NoEcho -ErrorAction Stop
     $when = $when.AddMinutes($minutes).ToString("HH:mm:ss")
     $jid = $job.Id

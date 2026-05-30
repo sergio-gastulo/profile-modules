@@ -147,5 +147,9 @@ function Set-Wallpaper {
         $wallpaper = getRandomWallpaper
     }
     $resolved = Resolve-Path $wallpaper
+	if (-not (Test-Path $resolved)) {
+		Write-Error -Category InvalidArgument -Message "Path '$resolved' is invalid."
+		return
+	}
     setWallpaper $resolved
 }

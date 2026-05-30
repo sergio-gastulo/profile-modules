@@ -5,13 +5,36 @@
 
 #endregion =====================================================================
 
+
+function launchBinaryAndEcho {
+	param(
+		[string] $Binary,
+		[string] $Arguments
+	)
+
+	if (-not (Test-Path $Binary)) {
+		$e = "Path $Binary does not exist."
+		Write-Error -Category InvalidArgument -ErrorAction Stop -Message $e
+s	}
+
+	if ($Arguments) {
+		Write-Host "Launching $Binary with arguments '$Arguments'"
+		Start-Process $Binary -ArgumentList $Arguments
+	} else {
+		Write-Host "Launching $Binary"
+		Start-Process $Binary
+	}
+}
+
+
 <#
 .SYNOPSIS
 	Open Zoom Application.
 .DESCRIPTION
 	Opens Zoom Application from binary directly.
 .NOTES
-	The full path binary is printed to stdout the check which path is being launched.
+	The full path binary is printed to stdout the check which path is being 
+	launched.
 .LINK
 	Specify a URI to a help page, this will show when Get-Help -Online is used.
 .EXAMPLE
@@ -25,8 +48,7 @@ function Open-Zoom {
 	
 	)	
 	$zoom = [System.IO.Path]::Combine(${env:APPDATA}, "Zoom", "bin", "Zoom.exe")
-    Write-Host "Launching $zoom."
-	Start-Process $zoom
+    launchBinaryAndEcho $zoom
 }
 
 
@@ -58,18 +80,15 @@ function Open-Wolfram {
 		$Version,
 		$binary
 	)
-	if (-not (Test-Path $binaryPath)) {
-		Write-Error -Message "Binary does not exist. Wrong version: $Version" -Category InvalidArgument -ErrorAction Stop
-	}
-	Write-Host "Launching: $binaryPath."
-	Start-Process $binaryPath
+	launchBinaryAndEcho $binaryPath
 }
 
 <#
 .SYNOPSIS
 	Opens Microsoft Office Applications from binaries.
 .NOTES
-	The full path binary is printed to stdout the check which path is being launched.
+	The full path binary is printed to stdout the check which path is being 
+	launched.
 .EXAMPLE
 	Open-MicrosoftOffice -App Word
 .EXAMPLE
@@ -86,24 +105,25 @@ function Open-MicrosoftOffice {
 		"excel" = "EXCEL.exe"
 		"point" = "POWERPNT.exe"
 		"powerpoint" = "POWERPNT.exe"
-		"onote" = "ONOTE.exe"
-		"onenote" = "ONOTE.exe"
+		"onote" = "ONENOTE.exe"
+		"onenote" = "ONENOTE.exe"
 	}
 
 	$App = $App.ToLower()
-	if (-not $Apps.Contains($App)) {
-		Write-Error -Category InvalidArgument -Message "Argument '$App' is not a valid Microsoft Office Application."
-		return
+	$binary = $Apps[$App]
+	if (-not $binary) {
+		$err = "Argument '$App' is not a valid Microsoft Office Application."
+		Write-Error -Category InvalidArgument -Message $err -ErrorAction Stop
 	}
 
-	$officePath = [System.IO.Path]::Combine(
-		$env:PROGRAMFILES,
+	$binaryPath = [System.IO.Path]::Combine(
+		$env:ProgramFiles,
 		"Microsoft Office",
 		"root",
 		"Office16",
-		$Apps[$App]
+		$binary
 	)
-	Start-Process $officePath
+	launchBinaryAndEcho $binaryPath
 }
 
 
@@ -123,8 +143,7 @@ function Open-Steam {
 		
 	)
 	$steam = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, "Steam", "steam.exe")
-	Write-Host "Launching steam from $steam"
-	Start-Process $steam	
+	launchBinaryAndEcho $steam
 }
 
 
@@ -144,10 +163,8 @@ function Open-Spotify {
 
 	)
 	$spotify = [System.IO.Path]::Combine($env:APPDATA, "Spotify", "spotify.exe")
-	Write-Host "Launching spotify from $spotify"
-	Start-Process $spotify
+	launchBinaryAndEcho $spotify
 }
-
 
 <#
 .SYNOPSIS
@@ -197,4 +214,19 @@ function Search-Google {
 		$url = "$url&udm=14"
 	}
     Start-Process $Browser -ArgumentList $url
+}
+
+
+function Open-CounterStrike {
+	[alias("cs")]
+	param (
+		
+	)
+	$binary = [System.IO.Path]::Combine(
+		${env:ProgramFiles(x86)},
+		"Counter-Strike 1.6",
+		"hl.exe"
+	)
+	$arguments = "-nomaster -game cstrike"
+	launchBinaryAndEcho $binary $arguments
 }
