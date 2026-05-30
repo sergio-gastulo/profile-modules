@@ -84,22 +84,16 @@ $remindme =  {
 function Set-Reminder {
     [alias("remindme")]
     param(
-        [double] $minutes
+        [Parameter(Position=0, Mandatory=$true)]
+        [double] $Minutes,
+        [Parameter(Position=1, Mandatory=$true, ValueFromRemainingArguments)]
+        [string[]] $ReminderMessage
     )
+    $msg = $ReminderMessage -join " "
 
-    if (-not $minutes) {
-        Write-Error -Category InvalidArgument -ErrorAction Stop -Message "Minutes are mandatory."
-    }
-
-    if (-not $args) {
-        $err = "Missing message (`$args). Signature call: Set-Reminder -minutes MINUTES msg1 msg2 ..."
-        Write-Error -Category InvalidArgument -ErrorAction Stop -Message $err
-    }
-
-    $reminderMessage = $args -join " "
-    $job = Start-Job -ScriptBlock $remindme -ArgumentList $minutes, $reminderMessage, "Reminder"
+    $job = Start-Job -ScriptBlock $remindme -ArgumentList $Minutes, $msg, "Reminder"
     $when = Get-TimeFromCity -City $CurrentCity -NoEcho -ErrorAction Stop
-    $when = $when.AddMinutes($minutes).ToString("HH:mm:ss")
+    $when = $when.AddMinutes($Minutes).ToString("HH:mm:ss")
     $jid = $job.Id
     Write-Host "Timer set -- reminder at $when (job id: $jid)"
 }
