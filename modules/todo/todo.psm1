@@ -40,30 +40,6 @@ function Move-Todo {
     Write-Host "All TODO files have been transferred to '$TODODirectory'."
 }
 
-function Switch-Todo {
-    [alias("todo")]
-    param(
-        [switch] $new,
-        [string] $suffix,
-        [switch] $search,
-        [string] $query,
-        [switch] $move,
-        [string] $scanDir = (Get-Location)
-    )
-
-    if ($new) {
-        New-Todo $suffix
-        return
-    }
-    if ($search) {
-        Search-Todo $query
-        return
-    }
-    if ($move) {
-        Move-Todo $scanDir
-        return
-    }
-}
 
 # https://stackoverflow.com/a/7162842/29272030
 $remindme =  {
@@ -97,3 +73,18 @@ function Set-Reminder {
     $jid = $job.Id
     Write-Host "Timer set -- reminder at $when (job id: $jid)"
 }
+
+
+# consider: 
+# Start-Job -ScriptBlock {
+#     Start-Sleep -Seconds 2
+#     $ps = [powershell]::Create()
+#     $ps.Runspace.ApartmentState = "STA"   # must be set before open
+#     $ps.AddScript((Get-Content "$HOME\bar.ps1" -Raw)) | Out-Null
+#     $rs = [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace()
+#     $rs.ApartmentState = "STA"
+#     $rs.Open()
+#     $ps.Runspace = $rs
+#     $ps.Invoke()
+#     $rs.Close()
+# }

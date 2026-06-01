@@ -218,7 +218,7 @@ function Search-Google {
 
 
 function Open-CounterStrike {
-	[alias("cs")]
+	[alias("cstrike")]
 	param (
 		
 	)
