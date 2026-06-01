@@ -9,6 +9,7 @@ Import-Module "$PSScriptRoot\modules\todo\todo.psd1"
 Import-Module "$PSScriptRoot\modules\workspace\workspace.psd1"
 Import-Module "$PSScriptRoot\modules\applications\applications.psd1"
 Import-Module "$PSScriptRoot\modules\style\style.psd1"
+Import-Module "$PSScriptRoot\modules\remindme\remindme.psd1"
 
 function prompt {
     return Get-Prompt
