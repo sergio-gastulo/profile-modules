@@ -13,6 +13,18 @@ Add-Type -TypeDefinition $SourceCode -ReferencedAssemblies (
     [System.Reflection.Assembly]::LoadWithPartialName("System.Xaml").Location
 )
 
+
+<#
+.SYNOPSIS
+    Put a reminder on top of your PowerShell sesion after X minutes.
+.EXAMPLE
+    Set-Reminder -Minutes 60 -ReminderMessage I need to learn PowerShell!
+    A small icon will pop up in one hour to remind you to learn PS.
+.EXAMPLE
+    remindme 0.5 eat something
+    A small notification will pop up to redmind you to eat something in 30 
+    seconds.
+#>
 function Set-Reminder {
     [alias("remindme")]
     param (

@@ -20,11 +20,7 @@ function capitalize {
     return $textInfo.ToTitleCase($str)
 }
 
-function Show-Time {
-    [alias("showtime")]
-    param(
-
-    )
+function showTime {
     foreach ($timezone in $timezones.GetEnumerator()) {
         $utcTime = (Get-Date).ToUniversalTime()
         $formated = $utcTime.AddHours($timezone.Value).ToShortTimeString()
@@ -33,13 +29,34 @@ function Show-Time {
     }
 }
 
+
+<#
+.SYNOPSIS
+    Show / Set time information to prompt or print to stdout.
+.EXAMPLE
+    Get-TimeFromCity -City Chicago
+    Set time to Chicago TimeZone and also set it in PowerShell.
+.EXAMPLE
+    time -Show
+    Show current time in various cities and timezones ($timezones).
+.EXAMPLE
+    Get-TimeFromCity -City Lima -NoEcho -TimeFormat "HH:mm:ss"
+    Sets prompt time to Lima's TimeZone silently.
+#>
 function Get-TimeFromCity {
     [alias("time")]
 	param(
 		[string] $City,
         [string] $TimeFormat,
-        [switch] $NoEcho
-	)
+        [switch] $NoEcho,
+        [switch] $Show	
+    )
+
+    if ($Show) {
+        showTime
+        return
+    }
+
     $city = $city.ToLower()
     if (-not $timezones.Contains($city)) {
         Write-Error -Message "City '$city' is not in hashable keys." -Category InvalidArgument

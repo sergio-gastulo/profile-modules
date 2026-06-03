@@ -26,7 +26,11 @@ function getClipboardImg {
 .EXAMPLE
     Save-CliboardImage -Directory foo -SuffixName bar -CopyPath
     Assume the date is 2026_05_26
-    The image is saved to the path .\foo\
+    The image is saved to the path .\foo\foo_2026_05_26_bar.png
+    And the full path is saved to Clipboard.
+.EXAMPLE
+    ss -SuffixName here -IgnorePrefix
+    Image is saved to $PWD with name here.png.
 #>
 function Save-ClipboardImage {
     [alias("ss")]
@@ -79,72 +83,119 @@ function Save-ClipboardImage {
 }
 
 
+<#
+.SYNOPSIS
+    Copies full resolved path to Clipboard.
+.NOTES
+    Useful for attaching documents: a simple Ctrl+V in the explorer window and 
+    the document is ready to be sent.
+.EXAMPLE
+    Copy-Path .
+    Copies $PWD to Clipboard.
+.EXAMPLE 
+    cpa .\foo\bar\baz.ps1
+    Copies $PWD\foo\bar\baz.ps1 to clipboard.
+#>
 function Copy-Path {
     [alias("cpa")]
     param(
-        [string] $path
+        [string] $Path
     )
 
-    if (-not (Test-Path $path)) {
-        Write-Error -Category InvalidArgument -Message "Path '$path' does not exist."
+    if (-not (Test-Path $Path)) {
+        Write-Error -Category InvalidArgument -Message "Path '$Path' does not exist."
         return
     }
-    Resolve-Path $path | Select-Object -ExpandProperty Path | Set-Clipboard 
+    Resolve-Path $Path | Select-Object -ExpandProperty Path | Set-Clipboard 
 } 
 
 
-function Start-PowershellAdminMode{
+<#
+.SYNOPSIS
+    Open a privileged PowerShell session and executing command if provided.
+.DESCRIPTION
+    Opens a privileged PowerShell session in $PWD and executes any provided 
+    command.
+.NOTES
+    Execute at your own risk.
+.EXAMPLE
+    Start-PowerShellAdminMode
+    Opens a simple privileged PowerShell session in $PWD.
+.EXAMPLE
+    sudo echo 1+1
+    Opens a simple privileged PowerShell session in $PWD, and echoes '1+1' in 
+    the elevated terminal.
+#>
+function Start-PowerShellAdminMode{
     [alias("sudo")]
     param(
         [Parameter(Mandatory=$false, ValueFromRemainingArguments)]
-        [string] $actions
+        [string] $Action
 	)
     $currentDir = Get-Location
-    $run = "Set-Location $currentDir; $actions"
+    $run = "Set-Location $currentDir; $Action"
     $command = "-NoProfile -NoExit -Command $run"
-    Write-Host "Launching Powershell in Administration Mode with the following commands: '$command'."
-    Start-Process powershell -Verb RunAs -ArgumentList $command
+    Write-Host "Launching PowerShell in Administration Mode with the following commands: '$command'."
+    Start-Process PowerShell -Verb RunAs -ArgumentList $command
 }
 
-
+<#
+.SYNOPSIS
+    Hide an item from Get-ChildItem (ls) unless -Force is called.
+.EXAMPLE
+    Hite-Item file.txt
+#>
 function Hide-Item {
     [alias("hide")]
 	param(
-		[string] $path
+		[string] $Path
 	)
 
-    if (-not (Test-Path $path)) {
-        Write-Error "Invalid Path: '$path'." -Category InvalidArgument 
+    if (-not (Test-Path $Path)) {
+        Write-Error "Invalid Path: '$Path'." -Category InvalidArgument 
         return
     }
     
-    $item = Get-Item $path -ErrorAction Stop
+    $item = Get-Item $Path -ErrorAction Stop
     $item.Attributes = $item.Attributes -bor "Hidden"
-	Write-Host "File hidden: $path"
+	Write-Host "File hidden: $Path"
 }
 
+
+<#
+.SYNOPSIS
+    Set-Location, but if path does not exist it's created.
+.DESCRIPTION
+    Set-Location. If path does not exist, it creates the file or directory 
+    (depending on what has been specified). Then, 'cd's to the aforementioned 
+    directory (or the directory of the file, depending on the case.)
+.NOTES
+    Does not raise any File-DoesNotExist error, instead prompts for action.
+.EXAMPLE
+    mcd non\existent\path
+#>
 function Set-LocationModified {
     [alias("mcd")]
 	param(
 		[Parameter(Position=0, mandatory=$true)]
-		[string] $path
+		[string] $Path
 	)
 
 	# if file/dir doesn't exist, create it
-	if(-not (Test-Path $path)){	
-		Write-Host "'$path' is not a valid path."
+	if(-not (Test-Path $Path)){	
+		Write-Host "'$Path' is not a valid path."
 		Write-Host @"
 	Select any of the following options:
 		{
-			d: create directory '$path'
-			f: create file '$path'
+			d: create directory '$Path'
+			f: create file '$Path'
 			q: quit
 		}
 "@
 		$opt = Read-Host "[d/f/[q]]"
 		switch ($opt) {
-			'd' {New-Item $path -ItemType "Directory"}
-			'f' {New-Item $path -ItemType "File"}
+			'd' {New-Item $Path -ItemType "Directory"}
+			'f' {New-Item $Path -ItemType "File"}
 			default {
 				Write-Host "Bye."
 				return
@@ -152,41 +203,77 @@ function Set-LocationModified {
 		}	
 	}
 	
-	if (Test-Path $path -PathType Leaf) {
-		Set-Location (Split-Path $path)
-	} elseif (Test-Path $path -PathType Container) {
-		Set-Location ($path)
+	if (Test-Path $Path -PathType Leaf) {
+		Set-Location (Split-Path $Path)
+	} elseif (Test-Path $Path -PathType Container) {
+		Set-Location ($Path)
 	} else {
-		Write-Error -Category InvalidArgument -Message "Unkown error. Path='$path'."
+		Write-Error -Category Unkown -Message "Unkown error. Path='$Path'."
 		return
 	}	
 }
 
 
+<#
+.SYNOPSIS
+    Create a plain text file and edit it directly with vim.
+.NOTES
+    The name of the path defaults to 't' (no extension).
+.EXAMPLE
+    New-TemporaryVimFileEdit
+    Runs vim.exe t.
+.EXAMPLE
+    vimt -RemoveExistent -FileName here
+    Removes any file with name 'here' (includes directory) in $PWD. Then, 
+    executes 'vim.exe here'.
+.EXAMPLE
+    vimt -SetClipboard
+    Useful when writing emails. After ':q'uitting vim, the content is copied to
+    Clipboard automatically.
+#>
 function New-TemporaryVimFileEdit {
     [alias("vimt")]
 	param(
-		[switch] $removeExistent,
-        [switch] $setClipboard,
-		[string] $fileName = "t"
+		[switch] $RemoveExistent,
+        [switch] $SetClipboard,
+		[string] $FileName = "t"
 	)
 
-    # create-remove file
-    if ((Test-Path $fileName) -and ($removeExistent)) {
-        Remove-Item $fileName
+    # create / remove file
+    if ((Test-Path $FileName) -and ($RemoveExistent)) {
+        Remove-Item $FileName
     }
-    vim.exe $fileName
+    vim.exe $FileName
 
     # copy to clipboard
-    if ($setClipboard) {
-        Get-Content $fileName -Encoding UTF8 | Set-Clipboard
+    if ($SetClipboard) {
+        Get-Content $FileName -Encoding UTF8 | Set-Clipboard
         Write-Host "Content set to clipboard."
     }
 }
 
-# the idea is to have the same syntax as in setx but %PATH% will never be 
-# edited via command line -- too dangerous.
-# might change my mind later tho
+
+<#
+.SYNOPSIS
+    Set a *new* environmental variable for any process (including the current 
+    PowerShell process).
+.NOTES
+    Editting %PATH% is *NOT* allowed for security reasons. Didn't even bother to
+    implement this. If %PATH% is provided as env-var name, the UI is launched 
+    and a warning is printed.
+.NOTES
+    If the environmental variable already exists, a error is raised (because of 
+    New-Item).
+.EXAMPLE
+    Set-EnvironmentalVariable -EnvironmentalVariable foo -Value bar
+    Sets $env:foo = 'bar'.
+.EXAMPLE
+    setenv -UI
+    The UI is launched: sysdm.cpl
+.EXAMPLE
+    setenv foo bar -NoEcho
+    Unnecessary printing statements are removed.
+#>
 function Set-EnvironmentalVariable {
     [alias("setenv")]
     param (
@@ -211,7 +298,7 @@ function Set-EnvironmentalVariable {
 
 	$envPath = "Env:\$EnvironmentalVariable"
 
-    # set for current powershell process
+    # set for current PowerShell process
     New-Item -Path $envPath -Value $Value -ErrorAction Stop
     # set for future processes
     [System.Environment]::SetEnvironmentVariable($EnvironmentalVariable, $Value, "User")
@@ -221,13 +308,31 @@ function Set-EnvironmentalVariable {
     }
 }
 
-# TODO: implement 
+
+<#
+.SYNOPSIS
+    Remove an already existing environmental variable from any process (
+    including the current PowerShell session).
+.NOTES
+    As in Set-EnvironmentalVariable, %PATH% is forbidden. The UI is launched 
+    instead.
+.EXAMPLE
+    Remove-EnvironmentalVariable -EnvironmentalVariable foo
+    Removes $env:foo.
+#>
 function Remove-EnvironmentalVariable {
     [alias("delenv")]
     param(
         [Parameter(Position=0, Mandatory=$true)]
         [string] $EnvironmentalVariable
     )
+
+    if ($EnvironmentalVariable.ToLower() -eq "path") {
+        Write-Warning "Removing %PATH% is FORBIDDEN."
+        Write-Host "Instead, launching sysdm.cpl to set/delete/append any necessary path."
+	    Start-Process sysdm.cpl
+        return
+    }
 
     $envpath = "Env:\$EnvironmentalVariable"
     $value = (Get-Item $envpath).Value
@@ -239,7 +344,7 @@ function Remove-EnvironmentalVariable {
     }
 
     # https://stackoverflow.com/a/69968124/29272030
-    # remove from current powershell process
+    # remove from current PowerShell process
     Remove-Item -Path $envpath -ErrorAction Stop
     # remove for future processes
     [System.Environment]::SetEnvironmentVariable($EnvironmentalVariable, '', "User")

@@ -6,8 +6,8 @@
         "Set-DarkTheme",
         "Set-LightTheme",
         "Set-Wallpaper",
-        "Get-PowershellThemes",
-        "Set-PowershellTheme",
+        "Get-PowerShellThemes",
+        "Set-PowerShellTheme",
         "isLightModeEnabled"
     )
 }

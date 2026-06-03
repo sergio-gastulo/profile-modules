@@ -10,6 +10,7 @@
         'Set-LocationModified',
         'New-TemporaryVimFileEdit',
         'Set-EnvironmentalVariable'
-        'Remove-EnvironmentalVariable'
+        'Remove-EnvironmentalVariable',
+        'Hide-Item'
     )
 }

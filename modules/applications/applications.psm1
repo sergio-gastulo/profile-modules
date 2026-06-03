@@ -217,6 +217,12 @@ function Search-Google {
 }
 
 
+<#
+.SYNOPSIS
+	Open CounterStrike from command line.
+.EXAMPLE
+	cstrike
+#>
 function Open-CounterStrike {
 	[alias("cstrike")]
 	param (
@@ -227,11 +233,30 @@ function Open-CounterStrike {
 		"Counter-Strike 1.6",
 		"hl.exe"
 	)
-	$arguments = "-nomaster -game cstrike"
-	launchBinaryAndEcho $binary $arguments
+	# https://www.reddit.com/r/counterstrike/comments/1mnxt5o/the_definitive_guide_to_maximize_cs_16_performance/
+	$arguments = @(
+		"-game cstrike",
+		"-nojoy", 				# disable joystick
+		"-nofbo", 				# turns off framebuffer method
+		"-nomsaa", 				# disable multisample antialiasing
+		"-nosync", 				# disable vsync
+		"-gl",					# force OpenGL
+		"-heapsize 524288"
+	)
+	launchBinaryAndEcho $binary "$arguments"
 }
 
 
+<#
+.SYNOPSIS
+	Open a YouTube video (or a list of them) in a local HTTP Server to prevent 
+	Adds from blocking the video in question.
+.NOTES 
+	This relies on python and jinja2 for injecting content in html.
+.EXAMPLE
+	Open-YouTubeVideos -Port 8080 -Browser msedge https://www.youtube.com/watch?v=pQfJChwRpXs
+	Opens the passed YouTube URL on localhost:8080.
+#>
 function Open-YouTubeVideos {
 	[alias("ytvids")]
 	param (
@@ -263,6 +288,19 @@ function Open-YouTubeVideos {
 }
 
 
+<#
+.SYNOPSIS
+	Search or open a YouTube query in the specified browser.
+.NOTES
+	Relies on a simple saps 'url'.
+.EXAMPLE
+	Open-YouTube -ShowPlaylists
+	Opens "https://www.youtube.com/feed/playlists on browser."
+.EXAMPLE
+	yt manim 3blue1brown
+	Opens "https://www.youtube.com/results?search_query=manim+3blue1brown on 
+	browser."
+#>
 function Open-YouTube {
 	[alias("yt")]
 	param(

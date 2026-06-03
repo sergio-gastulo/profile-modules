@@ -5,7 +5,7 @@ $DefaultLightModeTerminalTheme = "One Half Light (Copy)"
 $availableThemes = @(
     "CGA",
     "Campbell",
-    "Campbell Powershell",
+    "Campbell PowerShell",
     "Dark+",
     "Dimidium",
     "IBM 5153",
@@ -20,7 +20,14 @@ $availableThemes = @(
     "Vintage"
 )
 
-function Get-PowershellThemes {
+
+<#
+.SYNOPSIS
+    List all PowerShell Themes available (manually typed, yes.)
+.EXAMPLE
+    getpowthemes
+#>
+function Get-PowerShellThemes {
     [alias("getpowthemes")]
     param (
 
@@ -28,18 +35,27 @@ function Get-PowershellThemes {
     Format-Table $availableThemes
 }
 
-function Set-PowershellTheme {
+
+<#
+.SYNOPSIS
+    Set PowerShell theme from the same terminal.
+.EXAMPLE
+    Set-PowerShellTheme -Theme "One Half Dark"
+    setpowtheme "One Half Dark"
+#>
+function Set-PowerShellTheme {
     [alias("setpowtheme")]
     param (
-        [string] $theme
+        [Parameter(Mandatory=$true, Position=0)]
+        [string] $Theme
     )
 
-    if (-not ($theme -in $availableThemes)) {
+    if (-not ($Theme -in $availableThemes)) {
         Write-Error "Invalid Theme. To check available themes, run 'getpowthemes'." -Category InvalidArgument
         return
     }
 
-	$LocalPowershellSettings = [System.IO.Path]::Combine(
+	$LocalPowerShellSettings = [System.IO.Path]::Combine(
 		${env:LOCALAPPDATA}, 
 		"Packages", 
 		"Microsoft.WindowsTerminal_8wekyb3d8bbwe",  # is this machine dependent?
@@ -47,21 +63,37 @@ function Set-PowershellTheme {
 		"settings.json"
 	)
     # force writing theme to settings.json
-    $json = Get-Content $LocalPowershellSettings | ConvertFrom-Json
-    $json.profiles.list[0].colorScheme = $theme
-    $json.profiles.list[1].colorScheme = $theme
-    $json | ConvertTo-Json -depth 100 | Set-Content $LocalPowershellSettings
+    $json = Get-Content $LocalPowerShellSettings | ConvertFrom-Json
+    $json.profiles.list[0].colorScheme = $Theme
+    $json.profiles.list[1].colorScheme = $Theme
+    $json | ConvertTo-Json -depth 100 | Set-Content $LocalPowerShellSettings
 }
 
+
+<#
+.SYNOPSIS
+    Set Computer theme to Dark.
+.LINK
+    https://gist.github.com/bobby-tablez/4b5f1ee02c68a93dc8312c4ff858c0a7
+.EXAMPLE
+    Set-DarkTheme -ResetExplorer -Seconds 2 -PowerShellTheme "IBM 5153"
+    Sets dark theme for the computer, kills and respawns explorer.exe after two 
+    seconds and sets PowerShell theme to "IBM 5153."
+.EXAMPLE
+    darkmode
+    Sets dark theme for the computer and sets PowerShell theme to 
+    $DefaultDarkModeTerminalTheme.
+#>
 function Set-DarkTheme {
+    [alias("darkmode")]
     param(
         [switch] $ResetExplorer,
         [int] $Seconds = 1,
-        [string] $PowershellTheme = $DefaultDarkModeTerminalTheme
+        [string] $PowerShellTheme = $DefaultDarkModeTerminalTheme
     )
     Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "AppsUseLightTheme" -Value 0
     Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "SystemUsesLightTheme" -Value 0
-    Set-PowershellTheme $DefaultDarkModeTerminalTheme
+    Set-PowerShellTheme $DefaultDarkModeTerminalTheme
     if ($ResetExplorer) {
         $process = "explorer"
         Stop-Process -Name $process -Force 
@@ -71,15 +103,31 @@ function Set-DarkTheme {
     Write-Host "Dark theme enabled."
 }
 
+
+<#
+.SYNOPSIS
+    Set Computer theme to Light.
+.LINK
+    https://gist.github.com/bobby-tablez/4b5f1ee02c68a93dc8312c4ff858c0a7
+.EXAMPLE
+    Set-LightTheme -ResetExplorer -Seconds 2 -PowerShellTheme "IBM 5153"
+    Sets light theme for the computer, kills and respawns explorer.exe after two 
+    seconds and sets PowerShell theme to "IBM 5153."
+.EXAMPLE
+    lightmode
+    Sets Light theme for the computer and sets PowerShell theme to 
+    $DefaultLightModeTerminalTheme.
+#>
 function Set-LightTheme {
+    [alias("lightmode")]
     param(
         [switch] $ResetExplorer,
         [int] $Seconds = 1,
-        [string] $PowershellTheme = $DefaultLightModeTerminalTheme
+        [string] $PowerShellTheme = $DefaultLightModeTerminalTheme
     )
     Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "AppsUseLightTheme" -Value 1
     Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "SystemUsesLightTheme" -Value 1
-    Set-PowershellTheme $DefaultLightModeTerminalTheme
+    Set-PowerShellTheme $DefaultLightModeTerminalTheme
     if ($ResetExplorer) {
         $process = "explorer"
         Stop-Process -Name $process -Force 
@@ -89,7 +137,15 @@ function Set-LightTheme {
     Write-Host "Light theme enabled."
 }
 
-# TODO: expose only if required (not on global)
+
+<#
+.SYNOPSIS
+    Check if system has light mode enabled.
+.EXAMPLE
+    isLightModeEnabled      # True/False
+#>
+
+
 function isLightModeEnabled {
     param (
         
@@ -139,14 +195,27 @@ function setWallpaper {
     ) | Out-Null
 }
 
+
+<#
+.SYNOPSIS
+    Set wallpaper from command line.
+.DESCRIPTION
+    If no wallpaper path is provided, it will randomly fetch from 
+    $HOME\images\wallpapers\real_wallpapers.
+.LINK
+    # https://github.com/fleschutz/PowerShell/blob/main/scripts/set-wallpaper.ps1
+.EXAMPLE
+    Set-Wallpaper foo.png
+#>
 function Set-Wallpaper {
     param(
-        [string] $wallpaper
+        [Parameter(Mandatory=$false, Position=0)]
+        [string] $WallpaperPath
     )
-    if (-not $wallpaper) {
-        $wallpaper = getRandomWallpaper
+    if (-not $WallpaperPath) {
+        $WallpaperPath = getRandomWallpaper
     }
-    $resolved = Resolve-Path $wallpaper
+    $resolved = Resolve-Path $WallpaperPath
 	if (-not (Test-Path $resolved)) {
 		Write-Error -Category InvalidArgument -Message "Path '$resolved' is invalid."
 		return

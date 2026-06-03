@@ -4,7 +4,6 @@
 
     FunctionsToExport = @(
         "Get-TimeFromCity",
-        "Show-Time",
         "Get-Today"
     )
 }

@@ -8,7 +8,6 @@ from http.server import (
 
 from jinja2 import Template
 
-
 class ParseError(Exception):
     pass
 
