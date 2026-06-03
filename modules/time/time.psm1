@@ -45,15 +45,9 @@ function showTime {
 #>
 function Get-TimeFromCity {
     [alias("time")]
-    [CmdletBinding(DefaultParameterSetName='WithoutShow')]
     param(
-        [Parameter(ParameterSetName='WithoutShow', Mandatory=$true)]
-        [Parameter(ParameterSetName='WithShow', Mandatory=$false)]
-        [string] $City,
-
-        [Parameter(ParameterSetName='WithShow', Mandatory=$true)]
         [switch] $Show,
-
+        [string] $City,
         [string] $TimeFormat,
         [switch] $NoEcho
     )
@@ -107,3 +101,9 @@ function Get-Today {
 	$res = "$capitalized $res."
 	Write-Host $res
 }
+
+
+# -------------- DO NOT DELETE: -------------- 
+# https://stackoverflow.com/a/38355944/29272030
+Export-ModuleMember -Variable CurrentCity -Function * -Alias *
+# -------------- DO NOT DELETE: -------------- 
