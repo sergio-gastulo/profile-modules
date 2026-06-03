@@ -16,8 +16,9 @@ To import a single module:
 
 ## TODO
 - Have a config.json monolith that carries all configurations.
-- Implement "Remove-EnvVars"
 - Provide style for `remindme`.
+- Implemente "Has-Internet" function.
+- Provide style for Open-YouTubeVideos (.css).
 
 ## Configurations.
 * sensitive.psm1: Powershell Module where sensitive data is passed. To check an example, consult [sensitive-example.psm1](./configs/sensitive-example.psm1)

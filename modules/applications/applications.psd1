@@ -9,6 +9,8 @@
         'Open-Spotify',   
         'Open-MicrosoftOffice',   
         'Search-Google',
-        'Open-CounterStrike'
+        'Open-CounterStrike',
+        'Open-YouTube',
+        'Open-YouTubeVideos'
     )
 }

@@ -6,7 +6,8 @@ $lower = $Module.ToLower()
 $p = Resolve-Path "$PSScriptRoot\..\modules\$lower\$lower.psd1"
 
 if (-not (Test-Path $p)) {
-    Write-Error "Wrong Module, path $p does not exist."
+    $err = "Wrong Module, path $p does not exist."
+    Write-Error -Category InvalidArgument -ErrorAction Stop $err
 }
 
 $command = "Import-Module '$p'"

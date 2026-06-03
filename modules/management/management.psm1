@@ -96,13 +96,16 @@ function Copy-Path {
 function Start-PowershellAdminMode{
     [alias("sudo")]
     param(
-
+        [Parameter(Mandatory=$false, ValueFromRemainingArguments)]
+        [string] $actions
 	)
-    $currentDir = Get-Location | Select-Object -ExpandProperty Path
-    $run = "-Command Set-Location $currentDir; $args"
-    $command = "-NoProfile -NoExit $run"
+    $currentDir = Get-Location
+    $run = "Set-Location $currentDir; $actions"
+    $command = "-NoProfile -NoExit -Command $run"
+    Write-Host "Launching Powershell in Administration Mode with the following commands: '$command'."
     Start-Process powershell -Verb RunAs -ArgumentList $command
 }
+
 
 function Hide-Item {
     [alias("hide")]
@@ -190,27 +193,29 @@ function Set-EnvironmentalVariable {
         [string] $EnvironmentalVariable,
         [string] $Value,
 		[switch] $UI,
-        [switch] $Verbose
+        [switch] $NoEcho
     )
     
 	if ($UI) {
 	 	Write-Host "Launching sysdm.cpl to set environmental variable manually."
-	    sysdm.cpl
+	    Start-Process sysdm.cpl
         return
 	}
 
     if ($EnvironmentalVariable.ToLower() -eq "path") {
         Write-Warning "Environmental variable %PATH% will not be set via PS."
         Write-Host "Instead, launching sysdm.cpl to set it manually."
-	    sysdm.cpl
+	    Start-Process sysdm.cpl
         return
     }
 
 	$envPath = "Env:\$EnvironmentalVariable"
 
+    # set for current powershell process
     New-Item -Path $envPath -Value $Value -ErrorAction Stop
+    # set for future processes
     [System.Environment]::SetEnvironmentVariable($EnvironmentalVariable, $Value, "User")
-    if ($Verbose) {
+    if (-not $NoEcho) {
         Write-Host "Environmental variable $EnvironmentalVariable has been set to $value."
         Write-Host "You can now execute `$Env:$EnvironmentalVariable or open a command prompt and execute 'echo %$($variable.ToUpper())%'."
     }
@@ -218,5 +223,27 @@ function Set-EnvironmentalVariable {
 
 # TODO: implement 
 function Remove-EnvironmentalVariable {
-    
+    [alias("delenv")]
+    param(
+        [Parameter(Position=0, Mandatory=$true)]
+        [string] $EnvironmentalVariable
+    )
+
+    $envpath = "Env:\$EnvironmentalVariable"
+    $value = (Get-Item $envpath).Value
+    $sure = Read-Host "Remove variable '$EnvironmentalVariable' with value '$value'? [Y] Yes  [N] No  (default is N): "
+
+    if (-not ($sure.ToLower() -in @('y', 'yes'))) {
+        Write-Host "Aborted."
+        return
+    }
+
+    # https://stackoverflow.com/a/69968124/29272030
+    # remove from current powershell process
+    Remove-Item -Path $envpath -ErrorAction Stop
+    # remove for future processes
+    [System.Environment]::SetEnvironmentVariable($EnvironmentalVariable, '', "User")
+
+    Write-Host "Variable '$EnvironmentalVariable' has been removed from all processes."
+
 }

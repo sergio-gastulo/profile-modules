@@ -1,4 +1,3 @@
-
 Import-Module (Resolve-Path "$PSScriptRoot\..\time\time.psd1")
 
 $CSPath = [System.IO.Path]::Combine(
@@ -18,7 +17,7 @@ function Set-Reminder {
     [alias("remindme")]
     param (
         [Parameter(Mandatory=$true, Position=0)]
-        [double] $Minutes,        
+        [double] $Minutes,
         [Parameter(Mandatory=$true, ValueFromRemainingArguments)]
         [string[]] $ReminderMessage
     )
@@ -30,7 +29,7 @@ function Set-Reminder {
     $when = Get-TimeFromCity -City $CurrentCity -NoEcho -ErrorAction Stop
     $when = $when.AddMinutes($Minutes).ToString("HH:mm:ss")
 
-    Write-Host "Timer set -- reminder at $when (job id: $jid)"
+    Write-Host "Timer set -- reminder at $when."
 
 }
 

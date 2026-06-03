@@ -230,3 +230,56 @@ function Open-CounterStrike {
 	$arguments = "-nomaster -game cstrike"
 	launchBinaryAndEcho $binary $arguments
 }
+
+
+function Open-YouTubeVideos {
+	[alias("ytvids")]
+	param (
+		[Parameter(Position=0, ValueFromRemainingArguments)]
+		[string[]] $Urls,
+		[int] $Port = 8080,
+		[string] $Browser = "msedge"
+	)
+
+	if (-not $Urls) {
+		Write-Host "No `$Urls passed, getting `$Urls from clipboard."
+		$Urls = Get-Clipboard
+	}
+	if (-not $Urls) {
+		$err = "Did not get any data from Get-Clipboard. Aborting."
+		Write-Error -Category InvalidArgument -ErrorAction Stop -Message $err	
+	}
+	Write-Host "Got `$Urls: '$Urls'."
+	
+	$executable =  [System.IO.Path]::Combine(
+		$PSScriptRoot,
+		"youtube",
+		"src",
+		"server.py"
+	)
+	$url = "http://localhost:$Port"
+	Start-Process $Browser -ArgumentList $url
+	python.exe $executable $Port $Urls
+}
+
+
+function Open-YouTube {
+	[alias("yt")]
+	param(
+		[Parameter(Position=0, ValueFromRemainingArguments)]
+		[string[]] $Query,
+		[switch] $ShowPlaylists,
+		[Parameter(Mandatory=$false)][string] $Browser = "msedge"
+	)
+
+	if ($ShowPlaylists) {
+		$url = "https://www.youtube.com/feed/playlists"
+   		Start-Process $Browser -ArgumentList $url
+		return
+	}
+ 
+	$search = $Query -join "+"
+	$url = "https://www.youtube.com/results?search_query=$search"
+	Start-Process $Browser -ArgumentList $url
+
+}
