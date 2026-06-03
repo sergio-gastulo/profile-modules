@@ -8,6 +8,7 @@ Import-Module (Resolve-Path "$PSScriptRoot\..\time\time.psd1")
 
 
 function Set-OfficeWorkspace {
+    [alias("!office")]
     param (
         
     )
@@ -29,6 +30,7 @@ function Set-OfficeWorkspace {
 }
 
 function Set-OutWorkspace {
+    [alias("!out")]
     param (
         
     )
@@ -38,27 +40,4 @@ function Set-OutWorkspace {
         Set-DarkTheme -ResetExplorer
     }
     Set-Wallpaper
-}
-
-
-function Switch-Workspace {
-    [alias("!workspace")]
-    param(
-        [switch] $office,
-        [switch] $out
-    )
-
-    if (-not ($office -xor $out)) {
-        Write-Error -Category InvalidArgument -Message "Only one mode at a time can be passed." -ErrorAction Stop
-    }
-
-    if ($office) {
-        Set-OfficeWorkspace
-        return
-    }
-    if ($out) {
-        Set-OutWorkspace
-        return
-    }
-
 }

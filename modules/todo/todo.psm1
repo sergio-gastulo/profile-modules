@@ -1,12 +1,23 @@
 Import-Module (Resolve-Path "$PSScriptRoot\..\..\configs\sensitive.psm1")
 Import-Module (Resolve-Path "$PSScriptRoot\..\time\time.psd1")
 
+
+<#
+.SYNOPSIS
+    Create a new 'todo' file in $PWD.
+.EXAMPLE
+    New-Todo -Suffix foo
+    Creates 'todo-foo' in $PWD and calls vim.exe on said file.
+.EXAMPLE
+    ntodo
+    Creates 'todo-2026-05-31' in $PWD and calls vim.exe.
+#>
 function New-Todo {
     [alias("ntodo")]
     param(
-        [string] $suffix
+        [string] $Suffix
     )
-	if (-not $suffix) {
+	if (-not $Suffix) {
 		$date = (Get-Date).ToString("yyyy-MM-dd")
 	}
     $name = ("todo-" + $date)
@@ -19,21 +30,38 @@ function New-Todo {
 	vim.exe $name
 }
 
+
+<#
+.SYNOPSIS
+    Search a string accross all available TODOs file from $TODODirectory.
+.EXAMPLE
+    Search-Todo -Pattern museums
+#>
 function Search-Todo {
     [alias("stodo")]
     param (
-        [string] $search
+        [Parameter(Position=0, Mandatory=$true)]
+        [string] $Pattern
     )
-    Write-Host "Searching '$search' accross all files in $TODODirectory`:"
-    findstr.exe /s /i /n $search $TODODirectory\*
+    Write-Host "Searching '$Pattern' accross all files in $TODODirectory`:"
+    findstr.exe /s /i /n $Pattern $TODODirectory\*
 }
 
+
+<#
+.SYNOPSIS
+    Move all TODO's available in $PWD to $TODODirectory.
+.EXAMPLE
+    Move-Todo -ScanDirectory ..\foo
+    mtodo ..\foo
+#>
 function Move-Todo {
     [alias("mtodo")]
     param (
-        [string] $scanDirectory = (Get-Location)
+        [Parameter(Mandatory=$false)]
+        [string] $ScanDirectory = (Get-Location)
     )
-    $todos = Get-ChildItem $scanDirectory -Filter 'todo*'
+    $todos = Get-ChildItem $ScanDirectory -Filter 'todo*'
     foreach ($todo in $todos) {
         Move-Item -Path $todo.FullName -Destination $TODODirectory -ErrorAction Stop
     }

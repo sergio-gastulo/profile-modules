@@ -1,7 +1,7 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "", Target="CurrentCity")]
 $CurrentCity = "Madrid"
 
-$timezones = [ordered]@{
+$TimeZones = [ordered]@{
                     # UTC offset
     "chicago"		=	-5
     "lima"			= 	-5
@@ -21,7 +21,7 @@ function capitalize {
 }
 
 function showTime {
-    foreach ($timezone in $timezones.GetEnumerator()) {
+    foreach ($timezone in $TimeZones.GetEnumerator()) {
         $utcTime = (Get-Date).ToUniversalTime()
         $formated = $utcTime.AddHours($timezone.Value).ToShortTimeString()
         $city = capitalize ($timezone.Name)
@@ -38,18 +38,24 @@ function showTime {
     Set time to Chicago TimeZone and also set it in PowerShell.
 .EXAMPLE
     time -Show
-    Show current time in various cities and timezones ($timezones).
+    Show current time in various cities and timezones ($TimeZones).
 .EXAMPLE
     Get-TimeFromCity -City Lima -NoEcho -TimeFormat "HH:mm:ss"
     Sets prompt time to Lima's TimeZone silently.
 #>
 function Get-TimeFromCity {
     [alias("time")]
-	param(
-		[string] $City,
+    [CmdletBinding(DefaultParameterSetName='WithoutShow')]
+    param(
+        [Parameter(ParameterSetName='WithoutShow', Mandatory=$true)]
+        [Parameter(ParameterSetName='WithShow', Mandatory=$false)]
+        [string] $City,
+
+        [Parameter(ParameterSetName='WithShow', Mandatory=$true)]
+        [switch] $Show,
+
         [string] $TimeFormat,
-        [switch] $NoEcho,
-        [switch] $Show	
+        [switch] $NoEcho
     )
 
     if ($Show) {
@@ -57,15 +63,16 @@ function Get-TimeFromCity {
         return
     }
 
-    $city = $city.ToLower()
-    if (-not $timezones.Contains($city)) {
-        Write-Error -Message "City '$city' is not in hashable keys." -Category InvalidArgument
+    $lcity = $City.ToLower()
+    if (-not $TimeZones.Contains($lcity)) {
+        $err = "City '$lcity' is not in `$TimeZones dictionary."
+        Write-Error -Category InvalidArgument -Message $err
         return
     }
 
-    $offset = $timezones[$city]
+    $offset = $TimeZones[$lcity]
     $time = (Get-Date).ToUniversalTime().AddHours($offset)
-    $capitalized = capitalize $city
+    $capitalized = capitalize $lcity
     $script:CurrentCity = $capitalized
     if (-not $NoEcho) {
         Write-Host "Current time in $capitalized`: $time"
@@ -81,6 +88,14 @@ function Get-TimeFromCity {
     return $time 
 }
 
+
+<#
+.SYNOPSIS
+    Print Today's date.
+.EXAMPLE
+    Get-Today
+    today
+#>
 function Get-Today {
     [alias("today")]
 	param(
@@ -92,5 +107,3 @@ function Get-Today {
 	$res = "$capitalized $res."
 	Write-Host $res
 }
-
-Export-ModuleMember -Variable CurrentCity -Function * -Alias *

@@ -3,6 +3,7 @@
     RootModule        = 'workspace.psm1'
 
     FunctionsToExport = @(
-        'Switch-Workspace'
+        'Set-OfficeWorkspace',
+        'Set-OutWorkspace'
     )
 }
