@@ -14,7 +14,7 @@ To import a single module:
 . /path/to/repo/modules/module-name/module-name.psd1
 ```
 #### Note
-If you work in an environment where a PowerShell session is invoked (e.g. VS Code), you might want to disable $PROFILE. This can be achieved with: https://stackoverflow.com/a/72427464/29272030.
+If you work in an environment where a PowerShell session is invoked (e.g. VS Code), you might want to disable $PROFILE. This can be achieved [here](https://stackoverflow.com/a/72427464/29272030).
 
 
 ## TODO
