@@ -83,6 +83,15 @@ function Save-ClipboardImage {
 }
 
 
+function resolveExecutable {
+    param(
+        [string] $exe
+    )
+    $fullExePath = Get-Command $exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+    return $fullExePath
+}
+
+
 <#
 .SYNOPSIS
     Copies full resolved path to Clipboard.
@@ -103,10 +112,19 @@ function Copy-Path {
     )
 
     if (-not (Test-Path $Path)) {
-        Write-Error -Category InvalidArgument -Message "Path '$Path' does not exist."
-        return
+        # check if executable
+        $fullexe = resolveExecutable $Path
+        if (-not $fullexe) {
+            # no exe found
+            Write-Error -Category InvalidArgument -Message "Path '$Path' does not exist."
+            return
+        }
+        $resolved = $fullexe
+    } else {
+        $resolved = Resolve-Path $Path -ErrorAction Stop
     }
-    Resolve-Path $Path | Select-Object -ExpandProperty Path | Set-Clipboard 
+
+    $resolved | Set-Clipboard 
 } 
 
 

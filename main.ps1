@@ -14,3 +14,5 @@ Import-Module "$PSScriptRoot\modules\remindme\remindme.psd1"
 function prompt {
     return Get-Prompt
 }
+
+Clear-Host

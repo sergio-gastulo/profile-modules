@@ -11,14 +11,14 @@ $TimeZones = [ordered]@{
     "tokyo"			= 	+9
 }
 
-
+$textInfo = (Get-Culture).TextInfo
 function capitalize {
     param(
         [string] $str
     )
-    $textInfo = (Get-Culture).TextInfo
     return $textInfo.ToTitleCase($str)
 }
+
 
 function showTime {
     foreach ($timezone in $TimeZones.GetEnumerator()) {
@@ -49,7 +49,8 @@ function Get-TimeFromCity {
         [switch] $Show,
         [string] $City,
         [string] $TimeFormat,
-        [switch] $NoEcho
+        [switch] $NoEcho,
+        [switch] $NoSet
     )
 
     if ($Show) {
@@ -70,6 +71,11 @@ function Get-TimeFromCity {
     $script:CurrentCity = $capitalized
     if (-not $NoEcho) {
         Write-Host "Current time in $capitalized`: $time"
+        return
+    }
+
+    if ($NoSet) {
+        # not setting time in command prompt
         return
     }
 
