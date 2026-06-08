@@ -123,7 +123,7 @@ function Copy-Path {
     } else {
         $resolved = Resolve-Path $Path -ErrorAction Stop | Select-Object -ExpandProperty Path
     }
-    Write-Host $resolved
+    Write-Host "Resolved: '$resolved'."
     $resolved | Set-Clipboard 
 } 
 
