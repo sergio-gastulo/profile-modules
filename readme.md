@@ -1,8 +1,8 @@
-# Modularized $profile$
-A cleaner approach of hard-to-mantain [$profile$](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles) monolith. Modularization provides better isolation when testing.
+# Modularized $profile
+A cleaner approach of hard-to-mantain [$profile](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles) monolith. Modularization provides better isolation when testing.
 
 
-## How should my $profile$ look like?
+## How should my $profile look like?
 It should look like:
 ```
 . /path/to/repo/main.ps1
@@ -14,7 +14,7 @@ To import a single module:
 . /path/to/repo/modules/module-name/module-name.psd1
 ```
 #### Note
-When working in a IDLE or text editor where a PowerShell session is invoked (e.g. VS Code), you might want to disable $profile$. Instructions to disable $profile$ For VS Code can be found [here](https://stackoverflow.com/a/72427464/29272030).
+When working in a IDLE or text editor where a PowerShell session is invoked (e.g. VS Code), you might want to disable $profile. Instructions to disable $profile For VS Code can be found [here](https://stackoverflow.com/a/72427464/29272030).
 
 
 ## TODO
