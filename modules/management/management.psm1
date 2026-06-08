@@ -121,9 +121,9 @@ function Copy-Path {
         }
         $resolved = $fullexe
     } else {
-        $resolved = Resolve-Path $Path -ErrorAction Stop
+        $resolved = Resolve-Path $Path -ErrorAction Stop | Select-Object -ExpandProperty Path
     }
-
+    Write-Host $resolved
     $resolved | Set-Clipboard 
 } 
 
@@ -322,7 +322,7 @@ function Set-EnvironmentalVariable {
     [System.Environment]::SetEnvironmentVariable($EnvironmentalVariable, $Value, "User")
     if (-not $NoEcho) {
         Write-Host "Environmental variable $EnvironmentalVariable has been set to $value."
-        Write-Host "You can now execute `$Env:$EnvironmentalVariable or open a command prompt and execute 'echo %$($variable.ToUpper())%'."
+        Write-Host "You can now execute `$Env:$EnvironmentalVariable or open a command prompt and execute 'echo %$($EnvironmentalVariable.ToUpper())%'."
     }
 }
 

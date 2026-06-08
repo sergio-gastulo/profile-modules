@@ -68,17 +68,17 @@ function Get-TimeFromCity {
     $offset = $TimeZones[$lcity]
     $time = (Get-Date).ToUniversalTime().AddHours($offset)
     $capitalized = capitalize $lcity
-    $script:CurrentCity = $capitalized
     if (-not $NoEcho) {
         Write-Host "Current time in $capitalized`: $time"
         return
     }
-
+    
     if ($NoSet) {
         # not setting time in command prompt
         return
     }
-
+    
+    $script:CurrentCity = $capitalized
     # if format is specified, then is returned as a string in said format
     if ($TimeFormat) {
         $asfmt = $time.ToString($TimeFormat)

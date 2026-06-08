@@ -1,5 +1,5 @@
 # Modularized $PROFILE
-A cleaner approach to my old $PROFILE monolith. Modularization provides better isolation when coding and testing.
+A cleaner approach of hard-to-mantain ($PROFILE)[https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles] monolith. Modularization provides better isolation when testing.
 
 
 ## How should my $PROFILE look like?
@@ -14,7 +14,7 @@ To import a single module:
 . /path/to/repo/modules/module-name/module-name.psd1
 ```
 #### Note
-If you work in an environment where a PowerShell session is invoked (e.g. VS Code), you might want to disable $PROFILE. This can be achieved [here](https://stackoverflow.com/a/72427464/29272030).
+When working in a IDLE or text editor where a PowerShell session is invoked (e.g. VS Code), you might want to disable $PROFILE. Instructions to disable $PROFILE For VS Code can be found [here](https://stackoverflow.com/a/72427464/29272030).
 
 
 ## TODO
@@ -23,6 +23,7 @@ If you work in an environment where a PowerShell session is invoked (e.g. VS Cod
 - Implement "Has-Internet" function.
 - Provide style for Open-YouTubeVideos (.css).
 - Provide time parsing support in `remindme`.
+- Fix "-NoSet" on time.
 
 
 ## Configurations.
