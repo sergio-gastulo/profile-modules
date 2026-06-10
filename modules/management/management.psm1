@@ -87,7 +87,8 @@ function resolveExecutable {
     param(
         [string] $exe
     )
-    $fullExePath = Get-Command $exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+    $fullExePath =  Get-Command $exe -ErrorAction Stop | 
+                    Select-Object -ExpandProperty Source -ErrorAction Stop
     return $fullExePath
 }
 
@@ -113,15 +114,10 @@ function Copy-Path {
 
     if (-not (Test-Path $Path)) {
         # check if executable
-        $fullexe = resolveExecutable $Path
-        if (-not $fullexe) {
-            # no exe found
-            Write-Error -Category InvalidArgument -Message "Path '$Path' does not exist."
-            return
-        }
-        $resolved = $fullexe
+        $resolved = resolveExecutable $Path
     } else {
-        $resolved = Resolve-Path $Path -ErrorAction Stop | Select-Object -ExpandProperty Path
+        $resolved = Resolve-Path $Path -ErrorAction Stop | 
+                    Select-Object -ExpandProperty Path
     }
     Write-Host "Resolved: '$resolved'."
     $resolved | Set-Clipboard 
@@ -159,7 +155,9 @@ function Start-PowerShellAdminMode{
 
 <#
 .SYNOPSIS
-    Hide an item from Get-ChildItem (ls) unless -Force is called.
+    Hide an item from Get-ChildItem (ls).
+.DESCRIPTION
+    To show hidden files, remember to use ls -Force.    
 .EXAMPLE
     Hite-Item file.txt
 #>
@@ -170,10 +168,8 @@ function Hide-Item {
 	)
 
     if (-not (Test-Path $Path)) {
-        Write-Error "Invalid Path: '$Path'." -Category InvalidArgument 
-        return
-    }
-    
+        Write-Error "Invalid Path: '$Path'." -Category InvalidArgument -ErrorAction Stop
+    }  
     $item = Get-Item $Path -ErrorAction Stop
     $item.Attributes = $item.Attributes -bor "Hidden"
 	Write-Host "File hidden: $Path"
@@ -182,7 +178,7 @@ function Hide-Item {
 
 <#
 .SYNOPSIS
-    Set-Location, but if path does not exist it's created.
+    Set-Location, but if path does not exist you're prompted to create it.
 .DESCRIPTION
     Set-Location. If path does not exist, it creates the file or directory 
     (depending on what has been specified). Then, 'cd's to the aforementioned 
@@ -212,8 +208,8 @@ function Set-LocationModified {
 "@
 		$opt = Read-Host "[d/f/[q]]"
 		switch ($opt) {
-			'd' {New-Item $Path -ItemType "Directory"}
-			'f' {New-Item $Path -ItemType "File"}
+			'd' { New-Item $Path -ItemType "Directory" }
+			'f' { New-Item $Path -ItemType "File" }
 			default {
 				Write-Host "Bye."
 				return
@@ -226,9 +222,8 @@ function Set-LocationModified {
 	} elseif (Test-Path $Path -PathType Container) {
 		Set-Location ($Path)
 	} else {
-		Write-Error -Category Unkown -Message "Unkown error. Path='$Path'."
-		return
-	}	
+		Write-Error -Category Unkown -Message "Unkown error. Path='$Path'." -ErrorAction Stop
+    }
 }
 
 

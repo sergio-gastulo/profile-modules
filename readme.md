@@ -23,7 +23,6 @@ When working in a IDLE or text editor where a PowerShell session is invoked (e.g
 - Implement "Has-Internet" function.
 - Provide style for Open-YouTubeVideos (.css).
 - Provide time parsing support in `remindme`.
-- Fix "-NoSet" on time.
 
 
 ## Configurations.

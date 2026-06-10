@@ -15,7 +15,7 @@ function launchBinaryAndEcho {
 	if (-not (Test-Path $Binary)) {
 		$e = "Path $Binary does not exist."
 		Write-Error -Category InvalidArgument -ErrorAction Stop -Message $e
-s	}
+	}
 
 	if ($Arguments) {
 		Write-Host "Launching $Binary with arguments '$Arguments'"

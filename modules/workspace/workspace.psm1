@@ -15,18 +15,19 @@ function Set-OfficeWorkspace {
     Get-TimeFromCity -City Chicago
     Set-Location $WorkDirectory
     Open-Zoom
-    if (-not (isLightModeEnabled)) {
-        Set-LightTheme -ResetExplorer
+    if (isLightModeEnabled) {
+        Write-Host "Light Mode is already enabled. Skipping ..."
     } else {
-        Write-Host "Light Mode is already enabled."
+        Set-LightTheme -ResetExplorer
     }
+    
     $woringkWallpaper = [System.IO.Path]::Combine(
             $env:USERPROFILE, 
             "images", 
             "wallpapers", 
             "working.jpg"
         ) 
-    Set-Wallpaper $woringkWallpaper
+    Set-Wallpaper -WallpaperPath $woringkWallpaper
 }
 
 function Set-OutWorkspace {
@@ -38,6 +39,8 @@ function Set-OutWorkspace {
     Set-Location $HOME
     if (isLightModeEnabled) {
         Set-DarkTheme -ResetExplorer
+    } else {
+        Write-Host "Dark Mode is already enabled. Skipping ..."
     }
-    Set-Wallpaper
+    Set-Wallpaper -Random
 }

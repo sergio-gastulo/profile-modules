@@ -7,7 +7,7 @@ $GREEN = "${ESC}[32m"
 $YELLOW = "${ESC}[33m"
 $CYAN = "${ESC}[36m"
 
-function Get-BatteryInfo {
+function getBatteryInfo {
     param (
         
     )
@@ -19,7 +19,7 @@ function Get-BatteryInfo {
     return $charge, $isCharging
 }
 
-function Get-BatteryInfoStyled {
+function getBatteryInfoStyled {
     param (
         [double] $charge,
         [bool] $isCharging
@@ -44,7 +44,7 @@ function Get-BatteryInfoStyled {
 }
 
 
-function Get-CurrentPathStyled {
+function getCWDStyled {
     param(
 
     )
@@ -61,12 +61,12 @@ function Get-Prompt {
     param(
         [string] $city = $CurrentCity
     )
-    $path = Get-CurrentPathStyled
-    $time = Get-TimeFromCity -City $city -NoEcho -TimeFormat "HH:mm:ss"
+    $path = getCWDStyled
+    $time = Get-TimeFromCity -City $city -DontEcho -TimeFormat "HH:mm:ss"
 
-    $charge, $isCharging = Get-BatteryInfo 
-    $battery = Get-BatteryInfoStyled -charge $charge -isCharging $isCharging
+    $charge, $isCharging = getBatteryInfo 
+    $battery = getBatteryInfoStyled -charge $charge -isCharging $isCharging
 
     $promptStr = "PS ($time) ($battery) [$ssh] $path`n> "
-    return $promptStr 
+    return $promptStr
 }

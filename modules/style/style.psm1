@@ -129,7 +129,7 @@ function Set-LightTheme {
     Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "SystemUsesLightTheme" -Value 1
     Set-PowerShellTheme $DefaultLightModeTerminalTheme
     if ($ResetExplorer) {
-        $process = "explorer"
+        $process = "explorer.exe"
         Stop-Process -Name $process -Force 
         Start-Sleep -Seconds $Seconds 
         Start-Process $process
@@ -144,8 +144,6 @@ function Set-LightTheme {
 .EXAMPLE
     isLightModeEnabled      # True/False
 #>
-
-
 function isLightModeEnabled {
     param (
         
@@ -210,10 +208,16 @@ function setWallpaper {
 function Set-Wallpaper {
     param(
         [Parameter(Mandatory=$false, Position=0)]
-        [string] $WallpaperPath
+        [string] $WallpaperPath,
+        [switch] $Random
     )
     if (-not $WallpaperPath) {
-        $WallpaperPath = getRandomWallpaper
+        if ($Random) {
+            $WallpaperPath = getRandomWallpaper
+        } else {
+            $err = "No path provided to Wallpaper. Enable -Random flag."
+            Write-Error -ErrorAction Stop -Category InvalidArgument -Message $err
+        }
     }
     $resolved = Resolve-Path $WallpaperPath
 	if (-not (Test-Path $resolved)) {

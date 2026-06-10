@@ -35,13 +35,19 @@ function showTime {
     Show / Set time information to prompt or print to stdout.
 .EXAMPLE
     Get-TimeFromCity -City Chicago
-    Set time to Chicago TimeZone and also set it in PowerShell.
+    Set time to Chicago and print to stdout Chicago's DateTime.
 .EXAMPLE
     time -Show
     Show current time in various cities and timezones ($TimeZones).
 .EXAMPLE
-    Get-TimeFromCity -City Lima -NoEcho -TimeFormat "HH:mm:ss"
+    time -City Lima -DontEcho
     Sets prompt time to Lima's TimeZone silently.
+.EXAMPLE
+    time -City Lima -DontSet
+    Print to stdout current Lima's time without setting it to prompt.
+.EXAMPLE
+    time -City Lima -DontSet -DontEcho
+    Does nothing. -DontSet and -DontEcho contradict each other.
 #>
 function Get-TimeFromCity {
     [alias("time")]
@@ -49,8 +55,8 @@ function Get-TimeFromCity {
         [switch] $Show,
         [string] $City,
         [string] $TimeFormat,
-        [switch] $NoEcho,
-        [switch] $NoSet
+        [switch] $DontEcho,
+        [switch] $DontSet
     )
 
     if ($Show) {
@@ -64,28 +70,21 @@ function Get-TimeFromCity {
         Write-Error -Category InvalidArgument -Message $err
         return
     }
-
     $offset = $TimeZones[$lcity]
     $time = (Get-Date).ToUniversalTime().AddHours($offset)
     $capitalized = capitalize $lcity
-    if (-not $NoEcho) {
+    
+    if (-not $DontSet) { # if set
+        $script:CurrentCity = $capitalized
+    }
+    if (-not $DontEcho) { # if echo
         Write-Host "Current time in $capitalized`: $time"
         return
     }
-    
-    if ($NoSet) {
-        # not setting time in command prompt
-        return
-    }
-    
-    $script:CurrentCity = $capitalized
-    # if format is specified, then is returned as a string in said format
     if ($TimeFormat) {
         $asfmt = $time.ToString($TimeFormat)
         return $asfmt
     }
-    # otherwise, return as date expresssion
-    return $time 
 }
 
 
