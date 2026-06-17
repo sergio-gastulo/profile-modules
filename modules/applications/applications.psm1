@@ -307,6 +307,9 @@ function Open-YouTube {
 		[Parameter(Position=0, ValueFromRemainingArguments)]
 		[string[]] $Query,
 		[switch] $ShowPlaylists,
+		[switch] $WatchLater,
+		[switch] $History,
+		[switch] $LikedVideos,
 		[Parameter(Mandatory=$false)][string] $Browser = "msedge"
 	)
 
@@ -315,7 +318,25 @@ function Open-YouTube {
    		Start-Process $Browser -ArgumentList $url
 		return
 	}
- 
+	
+	if ($WatchLater) {
+		$url = "https://www.youtube.com/playlist?list=WL"
+		Start-Process $Browser -ArgumentList $url
+		return
+	}
+	
+	if ($History) {
+		$url = "https://www.youtube.com/feed/history"
+		Start-Process $Browser -ArgumentList $url
+		return
+	}
+	
+	if ($LikedVideos) {
+		$url = "https://www.youtube.com/playlist?list=LL"
+		Start-Process $Browser -ArgumentList $url
+		return
+	}
+
 	$search = $Query -join "+"
 	$url = "https://www.youtube.com/results?search_query=$search"
 	Start-Process $Browser -ArgumentList $url
@@ -334,5 +355,4 @@ function Open-TwoFactorAuthentication {
 		"38343JanPhilippWeber.2fastTwoFactorAuthenticatorSu_1.5.1.0_x64__nxr4mypqfqb9c",
 		"Project2FA.UWP.exe")
 	launchBinaryAndEcho $exe
-
 }
