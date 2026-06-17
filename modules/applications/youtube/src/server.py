@@ -38,7 +38,7 @@ def get_static_content(videoids : list[str]) -> str:
     return text
 
 
-def yt_server(videoids: list[str]):
+def yt_server(videoids: list[str]) -> BaseHTTPRequestHandler:
     class YoutubeServer(BaseHTTPRequestHandler):
         def do_GET(self):
             try:
@@ -52,7 +52,7 @@ def yt_server(videoids: list[str]):
     return YoutubeServer
 
 
-def handler(port: int, server: BaseHTTPRequestHandler):
+def handler(port: int, server: BaseHTTPRequestHandler) -> ThreadingHTTPServer:
     domain = "localhost"
     class StoppableHTTPServer(ThreadingHTTPServer):
         def run(self):
