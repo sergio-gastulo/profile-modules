@@ -1,6 +1,8 @@
-$THEMESREGISTRYPATH = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+$THEMES_REGISTRY_PATH = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+$SHOW_DESKTOP_REGISTRY_PATH ="HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
 $DefaultDarkModeTerminalTheme = "One Half Dark"
 $DefaultLightModeTerminalTheme = "One Half Light (Copy)"
+
 
 $availableThemes = @(
     "CGA",
@@ -71,9 +73,6 @@ function Set-PowerShellTheme {
 
 
 function killExplorerAndRestart {
-    param(
-        [int] $Seconds
-    )
     # apparently pwsh restarts the process automatically (tested)
     # https://www.reddit.com/r/PowerShell/comments/1cgv34l/comment/l1ygply
     $process = "explorer"
@@ -102,8 +101,8 @@ function Set-DarkTheme {
         [int] $Seconds = 1,
         [string] $PowerShellTheme = $DefaultDarkModeTerminalTheme
     )
-    Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "AppsUseLightTheme" -Value 0
-    Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "SystemUsesLightTheme" -Value 0
+    Set-ItemProperty -Path $THEMES_REGISTRY_PATH -Name "AppsUseLightTheme" -Value 0
+    Set-ItemProperty -Path $THEMES_REGISTRY_PATH -Name "SystemUsesLightTheme" -Value 0
     Set-PowerShellTheme $DefaultDarkModeTerminalTheme
     if ($ResetExplorer) {
         killExplorerAndRestart -Seconds $Seconds
@@ -133,8 +132,8 @@ function Set-LightTheme {
         [int] $Seconds = 1,
         [string] $PowerShellTheme = $DefaultLightModeTerminalTheme
     )
-    Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "AppsUseLightTheme" -Value 1
-    Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "SystemUsesLightTheme" -Value 1
+    Set-ItemProperty -Path $THEMES_REGISTRY_PATH -Name "AppsUseLightTheme" -Value 1
+    Set-ItemProperty -Path $THEMES_REGISTRY_PATH -Name "SystemUsesLightTheme" -Value 1
     Set-PowerShellTheme $DefaultLightModeTerminalTheme
     if ($ResetExplorer) {
         killExplorerAndRestart -Seconds $Seconds
@@ -153,7 +152,7 @@ function isLightModeEnabled {
     param (
         
     )
-    $registry = Get-ItemProperty -Path $THEMESREGISTRYPATH
+    $registry = Get-ItemProperty -Path $THEMES_REGISTRY_PATH
     $appsInLightMode = $registry.AppsUseLightTheme
     $systemInLightMode = $registry.SystemUsesLightTheme
     return ($appsInLightMode -and $systemInLightMode)
@@ -230,4 +229,27 @@ function Set-Wallpaper {
 		return
 	}
     setWallpaper $resolved
+}
+
+
+function Show-DesktopIcons {
+    param(
+        [switch] $DontKillExplorer
+    )
+    # https://superuser.com/a/1480904/2665716
+    Set-ItemProperty -Path $SHOW_DESKTOP_REGISTRY_PATH -Name "HideIcons" -Value 0
+    if (-not $DontKillExplorer) {
+        killExplorerAndRestart
+    }
+}
+
+function Hide-DesktopIcons {
+    param(
+        [switch] $DontKillExplorer
+    )
+    # https://superuser.com/a/1480904/2665716
+    Set-ItemProperty -Path $SHOW_DESKTOP_REGISTRY_PATH -Name "HideIcons" -Value 0
+    if (-not $DontKillExplorer) {
+        killExplorerAndRestart
+    }
 }

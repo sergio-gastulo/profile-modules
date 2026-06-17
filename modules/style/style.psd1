@@ -8,6 +8,7 @@
         "Set-Wallpaper",
         "Get-PowerShellThemes",
         "Set-PowerShellTheme",
-        "isLightModeEnabled"
+        "Show-DesktopIcons",
+        "Hide-DesktopIcons"
     )
 }
