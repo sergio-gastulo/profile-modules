@@ -79,6 +79,21 @@ function killExplorerAndRestart {
     Get-Process -Name $process | Stop-Process -Force
 }
 
+<#
+.SYNOPSIS
+    Check if system has light mode enabled.
+.EXAMPLE
+    isLightModeEnabled      # True/False
+#>
+function isLightModeEnabled {
+    param (
+        
+    )
+    $registry = Get-ItemProperty -Path $THEMES_REGISTRY_PATH
+    $appsInLightMode = $registry.AppsUseLightTheme
+    $systemInLightMode = $registry.SystemUsesLightTheme
+    return ($appsInLightMode -and $systemInLightMode)
+}
 
 <#
 .SYNOPSIS
@@ -101,6 +116,12 @@ function Set-DarkTheme {
         [int] $Seconds = 1,
         [string] $PowerShellTheme = $DefaultDarkModeTerminalTheme
     )
+
+    if (-not (isLightModeEnabled)) {
+        Write-Host "Computer is already in dark-mode."
+        return
+    }
+
     Set-ItemProperty -Path $THEMES_REGISTRY_PATH -Name "AppsUseLightTheme" -Value 0
     Set-ItemProperty -Path $THEMES_REGISTRY_PATH -Name "SystemUsesLightTheme" -Value 0
     Set-PowerShellTheme $DefaultDarkModeTerminalTheme
@@ -132,6 +153,12 @@ function Set-LightTheme {
         [int] $Seconds = 1,
         [string] $PowerShellTheme = $DefaultLightModeTerminalTheme
     )
+
+    if (isLightModeEnabled) {
+        Write-Host "Computer is already set in light-mode."
+        return
+    }
+
     Set-ItemProperty -Path $THEMES_REGISTRY_PATH -Name "AppsUseLightTheme" -Value 1
     Set-ItemProperty -Path $THEMES_REGISTRY_PATH -Name "SystemUsesLightTheme" -Value 1
     Set-PowerShellTheme $DefaultLightModeTerminalTheme
@@ -141,22 +168,6 @@ function Set-LightTheme {
     Write-Host "Light theme enabled."
 }
 
-
-<#
-.SYNOPSIS
-    Check if system has light mode enabled.
-.EXAMPLE
-    isLightModeEnabled      # True/False
-#>
-function isLightModeEnabled {
-    param (
-        
-    )
-    $registry = Get-ItemProperty -Path $THEMES_REGISTRY_PATH
-    $appsInLightMode = $registry.AppsUseLightTheme
-    $systemInLightMode = $registry.SystemUsesLightTheme
-    return ($appsInLightMode -and $systemInLightMode)
-}
 
 function getRandomWallpaper {
         # https://www.reddit.com/r/PowerShell/comments/wpgjyc/comment/ikgojkg
