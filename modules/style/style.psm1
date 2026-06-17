@@ -74,10 +74,10 @@ function killExplorerAndRestart {
     param(
         [int] $Seconds
     )
+    # apparently pwsh restarts the process automatically (tested)
+    # https://www.reddit.com/r/PowerShell/comments/1cgv34l/comment/l1ygply
     $process = "explorer"
-    Stop-Process -Name $process -Force 
-    Start-Sleep -Seconds $Seconds 
-    Start-Process $process
+    Get-Process -Name $process | Stop-Process -Force
 }
 
 
