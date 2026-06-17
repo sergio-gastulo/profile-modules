@@ -70,6 +70,17 @@ function Set-PowerShellTheme {
 }
 
 
+function killExplorerAndRestart {
+    param(
+        [int] $Seconds
+    )
+    $process = "explorer"
+    Stop-Process -Name $process -Force 
+    Start-Sleep -Seconds $Seconds 
+    Start-Process $process
+}
+
+
 <#
 .SYNOPSIS
     Set Computer theme to Dark.
@@ -95,10 +106,7 @@ function Set-DarkTheme {
     Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "SystemUsesLightTheme" -Value 0
     Set-PowerShellTheme $DefaultDarkModeTerminalTheme
     if ($ResetExplorer) {
-        $process = "explorer"
-        Stop-Process -Name $process -Force 
-        Start-Sleep -Seconds $Seconds 
-        Start-Process $process
+        killExplorerAndRestart -Seconds $Seconds
     }
     Write-Host "Dark theme enabled."
 }
@@ -129,10 +137,7 @@ function Set-LightTheme {
     Set-ItemProperty -Path $THEMESREGISTRYPATH -Name "SystemUsesLightTheme" -Value 1
     Set-PowerShellTheme $DefaultLightModeTerminalTheme
     if ($ResetExplorer) {
-        $process = "explorer.exe"
-        Stop-Process -Name $process -Force 
-        Start-Sleep -Seconds $Seconds 
-        Start-Process $process
+        killExplorerAndRestart -Seconds $Seconds
     }
     Write-Host "Light theme enabled."
 }

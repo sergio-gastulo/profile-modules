@@ -18,11 +18,14 @@ When working in a IDLE or text editor where a PowerShell session is invoked (e.g
 
 
 ## TODO
+- Hide icons from desktop programmatiaclly?
 - Have a config.json monolith that carries all configurations.
 - Provide style for `remindme`.
-- Implement "Has-Internet" function.
 - Provide style for Open-YouTubeVideos (.css).
 - Provide time parsing support in `remindme`.
+- check 2fa: C:\Program Files\WindowsApps\38343JanPhilippWeber.2fastTwoFactorAuthenticat
+              orSu_1.5.1.0_x64__nxr4mypqfqb9c\Project2FA.UWP.exe
+- Check https://github.com/lexiforest/curl_cffi for parsing youtube.
 
 
 ## Configurations.
