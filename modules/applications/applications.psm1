@@ -321,3 +321,18 @@ function Open-YouTube {
 	Start-Process $Browser -ArgumentList $url
 
 }
+
+
+function Open-TwoFactorAuthentication {
+	[alias("2fa")]
+	param (
+		
+	)
+	$exe = [System.IO.Path]::Combine(
+		$env:ProgramFiles, 
+		"WindowsApps",
+		"38343JanPhilippWeber.2fastTwoFactorAuthenticatorSu_1.5.1.0_x64__nxr4mypqfqb9c",
+		"Project2FA.UWP.exe")
+	launchBinaryAndEcho $exe
+
+}

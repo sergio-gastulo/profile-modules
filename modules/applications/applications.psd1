@@ -12,5 +12,6 @@
         'Open-CounterStrike',
         'Open-YouTube',
         'Open-YouTubeVideos'
+        'Open-TwoFactorAuthentication'
     )
 }
