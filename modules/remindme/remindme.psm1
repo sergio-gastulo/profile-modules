@@ -38,7 +38,7 @@ function Set-Reminder {
     $seconds = $Minutes * 60
     [RemindMe.App]::Launch($seconds, $message)
 
-    $when = Get-TimeFromCity -City $CurrentCity -NoEcho -ErrorAction Stop
+    $when = Get-TimeFromCity -City $CurrentCity -DontSet -DontEcho
     $when = $when.AddMinutes($Minutes).ToString("HH:mm:ss")
 
     Write-Host "Timer set -- reminder at $when."

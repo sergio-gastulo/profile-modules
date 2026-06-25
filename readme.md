@@ -33,3 +33,7 @@ When working in a IDLE or text editor where a PowerShell session is invoked (e.g
 ## Shout-out to ...
 - https://gist.github.com/bobby-tablez/4b5f1ee02c68a93dc8312c4ff858c0a7
 - https://github.com/fleschutz/PowerShell/blob/main/scripts/set-wallpaper.ps1
+
+## Known issues
+- It is known that when setting a desktop wallpaper (Set-Wallpaper), opening a second desktop (Ctrl+Windows+D) reverts changes back. The only workaround I can think of is basically setting the wallpaper on each window manually...
+

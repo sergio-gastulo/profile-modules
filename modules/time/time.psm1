@@ -47,7 +47,7 @@ function showTime {
     Print to stdout current Lima's time without setting it to prompt.
 .EXAMPLE
     time -City Lima -DontSet -DontEcho
-    Does nothing. -DontSet and -DontEcho contradict each other.
+    Returns time in [System.DateTime] type.
 #>
 function Get-TimeFromCity {
     [alias("time")]
@@ -82,9 +82,9 @@ function Get-TimeFromCity {
         return
     }
     if ($TimeFormat) {
-        $asfmt = $time.ToString($TimeFormat)
-        return $asfmt
+        $time = $time.ToString($TimeFormat)
     }
+    return $time
 }
 
 
