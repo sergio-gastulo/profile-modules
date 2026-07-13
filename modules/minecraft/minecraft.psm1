@@ -4,7 +4,8 @@ if (-not $MinecraftPath) {
     $MinecraftPath = [System.IO.Path]::Combine($env:APPDATA, ".minecraft")
 }
 if (-not (Test-Path $MinecraftPath)) {
-    $err = "This module will not be loaded since no $MinecraftPath has been found. This is, Minecraft is not installed on this computer."
+    $err = "This module will not be loaded since no $MinecraftPath has been found.
+            This is, Minecraft is not installed on this computer."
     Write-Error -ErrorAction Stop -Category NotImplemented -Message $err
 }
 
@@ -42,11 +43,12 @@ function newMinecraftVersionModDirectory {
 .SYNOPSIS
     Switch Minecraft Mod versions.
 .DESCRIPTION
-    Mods from .minecraft\mods are moved to .minecraft\versioned-mods\cver and 
-    mods from .minecraft\tver are moved to .minecraft\mods. CurrentVersion must
-    be specified since it is not possible for now to query the last played 
-    version from the Minecraft Launcher. If TargetVersion is not specified, 
-    it is effectively equivalent to "clean my mods carpet", this is: mods will 
+    Mods from %APPDATA%\.minecraft\mods (.mc\mods) are moved to .minecraft\
+    versioned-mods\$CurrentVersion (.mc\vmods\cver) and mods from .mc\vmods\
+    $TargetVersion are moved to .mc\mods. If $CurrentVersion is not specified, 
+    it is assumed that mods from $TargetVersion will be moved to .mc\mods 
+    without flushing any mod. If TargetVersion is not specified, it is 
+    effectively equivalent to "clean my mods carpet", this is: mods will 
     be moved to its .mc\vmods\cver directory but .mc\mods will not be populated
     from any other versioned mod.
 .NOTES
@@ -66,34 +68,36 @@ function newMinecraftVersionModDirectory {
 function Switch-MinecraftModVersion {
     [alias("mcmodver")]
     param(
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$false)]
         [version] $CurrentVersion,
         [Parameter(Mandatory=$false)]
         [version] $TargetVersion = $null
     )
 
-    $currVersionPath = newMinecraftVersionModDirectory $CurrentVersion
-    $tarVersionPath = newMinecraftVersionModDirectory $TargetVersion
+    if (-not $CurrentVersion -and -not $TargetVersion) {
+        $m = "At least one [Current|Target]Version must be specified."
+        Write-Error -ErrorAction Stop -Category InvalidArgument -Message $m
+    }
 
     # ls .mc\mods -> .mc\vmods\cver
-    Get-ChildItem $ModPath | ForEach-Object {
-        Move-Item $_.FullName -Destination $currVersionPath -ErrorAction Stop
+    if ($CurrentVersion) {
+        $currVersionPath = newMinecraftVersionModDirectory $CurrentVersion
+        Get-ChildItem $ModPath | ForEach-Object {
+            Move-Item $_.FullName -Destination $currVersionPath -ErrorAction Stop
+        }
+        Write-Host "Mods from .minecraft\mods have been moved succesfully to $currVersionPath."
     }
-    Write-Host "Mods from .minecraft\mods have been moved succesfully to $currVersionPath."
     
-    if (-not $TargetVersion) {
-        # user wants to clean mods folder instead: 
-        # no need to feed from different version
-        Write-Host "$ModPath is free of mods."
-        return
+    # ls .mc\vmods\tver -> .mc\mods
+    if ($TargetVersion) {
+        $tarVersionPath = newMinecraftVersionModDirectory $TargetVersion
+        Get-ChildItem $tarVersionPath | ForEach-Object {
+            Move-Item $_.FullName -Destination $ModPath -ErrorAction Stop
+        }
+        Write-Host "Mods from .minecraft\versioned-mods have been moved succesfully to $ModPath."
+        Write-Host "You can now launch version $TargetVersion with the mods loaded."
     }
 
-    # ls .mc\vmods\tarver -> .mc\mods
-    Get-ChildItem $tarVersionPath | ForEach-Object {
-        Move-Item $_.FullName -Destination $ModPath -ErrorAction Stop
-    }
-    Write-Host "Mods from .minecraft\versioned-mods have been moved succesfully to $ModPath."
-    Write-Host "You can now launch version $TargetVersion with the mods loaded."
 }
 
 
