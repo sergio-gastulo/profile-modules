@@ -2,4 +2,4 @@ configs/sensitive.psm1
 configs/config.json
 .venv
 .vscode
-**/playlists/**
+**/playlists

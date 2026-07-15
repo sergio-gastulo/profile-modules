@@ -69,7 +69,7 @@ function Open-Wolfram {
     [alias("wolfram")]
     param (
 		[Parameter(Position=0, mandatory=$true)]
-        [string]$Version
+        [version] $Version
     )
 
 	$binary = "WolframNB.exe"
