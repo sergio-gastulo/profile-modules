@@ -3,3 +3,4 @@ configs/config.json
 .venv
 .vscode
 **/playlists
+**/__pycache__
