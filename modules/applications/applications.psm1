@@ -5,6 +5,7 @@
 
 #endregion =====================================================================
 
+Import-Module (Resolve-Path "$PSScriptRoot\youtube\youtube.psm1")
 
 function launchBinaryAndEcho {
 	param(
@@ -244,103 +245,6 @@ function Open-CounterStrike {
 		"-heapsize 524288"
 	)
 	launchBinaryAndEcho $binary "$arguments"
-}
-
-
-<#
-.SYNOPSIS
-	Open a YouTube video (or a list of them) in a local HTTP Server to prevent 
-	Adds from blocking the video in question.
-.NOTES 
-	This relies on python and jinja2 for injecting content in html.
-.EXAMPLE
-	Open-YouTubeVideos -Port 8080 -Browser msedge https://www.youtube.com/watch?v=pQfJChwRpXs
-	Opens the passed YouTube URL on localhost:8080.
-#>
-function Open-YouTubeVideos {
-	[alias("ytvids")]
-	param (
-		[Parameter(Position=0, ValueFromRemainingArguments)]
-		[string[]] $Urls,
-		[int] $Port = 8080,
-		[string] $Browser = "msedge"
-	)
-
-	if (-not $Urls) {
-		Write-Host "No `$Urls passed, getting `$Urls from clipboard."
-		$Urls = Get-Clipboard
-	}
-	if (-not $Urls) {
-		$err = "Did not get any data from Get-Clipboard. Aborting."
-		Write-Error -Category InvalidArgument -ErrorAction Stop -Message $err	
-	}
-	Write-Host "Got `$Urls: '$Urls'."
-	
-	$executable =  [System.IO.Path]::Combine(
-		$PSScriptRoot,
-		"youtube",
-		"src",
-		"server.py"
-	)
-	$url = "http://localhost:$Port"
-	Start-Process $Browser -ArgumentList $url
-	python.exe $executable $Port $Urls
-}
-
-
-<#
-.SYNOPSIS
-	Search or open a YouTube query in the specified browser.
-.NOTES
-	Relies on a simple saps 'url'.
-.EXAMPLE
-	Open-YouTube -ShowPlaylists
-	Opens "https://www.youtube.com/feed/playlists on browser."
-.EXAMPLE
-	yt manim 3blue1brown
-	Opens "https://www.youtube.com/results?search_query=manim+3blue1brown on 
-	browser."
-#>
-function Open-YouTube {
-	[alias("yt")]
-	param(
-		[Parameter(Position=0, ValueFromRemainingArguments)]
-		[string[]] $Query,
-		[switch] $ShowPlaylists,
-		[switch] $WatchLater,
-		[switch] $History,
-		[switch] $LikedVideos,
-		[Parameter(Mandatory=$false)][string] $Browser = "msedge"
-	)
-
-	if ($ShowPlaylists) {
-		$url = "https://www.youtube.com/feed/playlists"
-   		Start-Process $Browser -ArgumentList $url
-		return
-	}
-	
-	if ($WatchLater) {
-		$url = "https://www.youtube.com/playlist?list=WL"
-		Start-Process $Browser -ArgumentList $url
-		return
-	}
-	
-	if ($History) {
-		$url = "https://www.youtube.com/feed/history"
-		Start-Process $Browser -ArgumentList $url
-		return
-	}
-	
-	if ($LikedVideos) {
-		$url = "https://www.youtube.com/playlist?list=LL"
-		Start-Process $Browser -ArgumentList $url
-		return
-	}
-
-	$search = $Query -join "+"
-	$url = "https://www.youtube.com/results?search_query=$search"
-	Start-Process $Browser -ArgumentList $url
-
 }
 
 

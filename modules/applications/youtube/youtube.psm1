@@ -56,3 +56,59 @@ function Invoke-YouTubeHTTPServer {
     & $VenvPythonExecutable $mainPath $executableArgs
 
 }
+
+
+<#
+.SYNOPSIS
+	Search or open a YouTube query in the specified browser.
+.NOTES
+	Relies on a simple saps 'url'.
+.EXAMPLE
+	Open-YouTube -ShowPlaylists
+	Opens "https://www.youtube.com/feed/playlists on browser."
+.EXAMPLE
+	yt manim 3blue1brown
+	Opens "https://www.youtube.com/results?search_query=manim+3blue1brown on 
+	browser."
+#>
+function Open-YouTube {
+	[alias("yt")]
+	param(
+		[Parameter(Position=0, ValueFromRemainingArguments)]
+		[string[]] $Query,
+		[switch] $ShowPlaylists,
+		[switch] $WatchLater,
+		[switch] $History,
+		[switch] $LikedVideos,
+		[Parameter(Mandatory=$false)][string] $Browser = "msedge"
+	)
+
+	if ($ShowPlaylists) {
+		$url = "https://www.youtube.com/feed/playlists"
+   		Start-Process $Browser -ArgumentList $url
+		return
+	}
+	
+	if ($WatchLater) {
+		$url = "https://www.youtube.com/playlist?list=WL"
+		Start-Process $Browser -ArgumentList $url
+		return
+	}
+	
+	if ($History) {
+		$url = "https://www.youtube.com/feed/history"
+		Start-Process $Browser -ArgumentList $url
+		return
+	}
+	
+	if ($LikedVideos) {
+		$url = "https://www.youtube.com/playlist?list=LL"
+		Start-Process $Browser -ArgumentList $url
+		return
+	}
+
+	$search = $Query -join "+"
+	$url = "https://www.youtube.com/results?search_query=$search"
+	Start-Process $Browser -ArgumentList $url
+
+}

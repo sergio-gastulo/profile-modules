@@ -5,7 +5,7 @@ Handle playlist-related functionality.
 from pathlib import Path
 
 from .shared import ABSOLUTE_YOUTUBE_DIR
-from .urlparse import parse_yturl, YouTubeVideoID
+from .urlparse import YouTubeVideoID
 
 
 def read_playlist(name: str | Path) -> list[YouTubeVideoID]:
@@ -21,7 +21,7 @@ def read_playlist(name: str | Path) -> list[YouTubeVideoID]:
 
     with open(path, 'r') as file:
         urls = file.read().splitlines()
-        
-    return [parse_yturl(url) for url in urls]
+
+    return [YouTubeVideoID.from_url(url) for url in urls]
 
 

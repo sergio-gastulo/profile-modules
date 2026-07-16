@@ -9,8 +9,7 @@ from http import HTTPStatus
 from http.server import (ThreadingHTTPServer, 
                          BaseHTTPRequestHandler)
 
-from .urlparse import (YouTubeVideoID, 
-                       ParseError)
+from .urlparse import YouTubeVideoID
 from .render import render, load_css
 
 

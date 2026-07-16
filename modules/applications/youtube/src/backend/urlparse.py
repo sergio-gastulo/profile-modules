@@ -22,13 +22,14 @@ def parse_yturl(youtubeurl: str) -> tuple[str, str | None]:
         * [ytdomain]/watch/?v=[videoid][...]
         * [videoid]
         * /[videoid][...]
+        * /[domain]/watch
     """
 
     parsed = urlparse(youtubeurl)
     playlist = None
     match parsed.path.strip("/").split("/"):
 
-        case ["watch"]:
+        case *_, "watch":
             if not hasattr(parsed, "query"):
                 raise ParseError(
                     f"Url {youtubeurl!r} does not have 'query' attribute.")
@@ -56,7 +57,6 @@ def parse_yturl(youtubeurl: str) -> tuple[str, str | None]:
 
 @dataclass
 class YouTubeVideoID:
-
     videoid: str | None = None
     playlist: str | None = None
 

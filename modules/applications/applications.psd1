@@ -11,7 +11,7 @@
         'Search-Google',
         'Open-CounterStrike',
         'Open-YouTube',
-        'Open-YouTubeVideos'
         'Open-TwoFactorAuthentication'
+        'Invoke-YouTubeHTTPServer'
     )
 }
