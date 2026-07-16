@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{title}}</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+        {% if showbuttons %}
+        <button id="prev">Previous video</button>
+        {% endif %}
+        <iframe
+            src="https://www.youtube.com/embed/{{videoid}}"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen>
+        </iframe>
+        {% if showbuttons %}
+        <button id="next">Next video</button>
+        {% endif %}
+    </body>
+    {% if showbuttons %}
+    <script>
+        document.getElementById("next").addEventListener("click", () => {
+            window.location.assign("./next")
+        });
+        document.getElementById("prev").addEventListener("click", () => {
+            window.location.assign("./prev")
+        });
+    </script>
+    {% endif %}
+</html>

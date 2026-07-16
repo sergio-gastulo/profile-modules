@@ -16,6 +16,8 @@ if (-not (Test-Path $VenvPythonExecutable)) {
 .NOTES
     This function is a single wrapper of the source code which can be read at 
     youtube/src.
+.NOTES
+    Playlist takes precedence over YouTubeURL whenever both are specified.
 .EXAMPLE
     ytserver -PlaylistName myplaylist
 .EXAMPLE
@@ -33,7 +35,7 @@ function Invoke-YouTubeHTTPServer {
         [string] $Domain = "localhost"
     )
 
-    $mainPath = "$PSScriptRoot\src\main.py"
+    $mainPath = "$PSScriptRoot\main.py"
     $executableArgs = [Collections.Generic.List[string]]::new()
     $executableArgs.Add("--port=$Port")
     $executableArgs.Add("--domain=$Domain")
@@ -51,7 +53,6 @@ function Invoke-YouTubeHTTPServer {
 
     $urlString = "--urls=[" + (($YouTubeURL | ForEach-Object {"'$_'"}) -join ', ') + "]"
     $executableArgs.Add($urlString)
-    Write-Host $executableArgs
     & $VenvPythonExecutable $mainPath $executableArgs
 
 }
